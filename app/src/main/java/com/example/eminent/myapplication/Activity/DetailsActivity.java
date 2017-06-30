@@ -75,7 +75,6 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         days = intent.getIntExtra("days",0);
         System.out.println("days  "+days);
-        //
         recyclerView = (RecyclerView) findViewById(R.id.recyvlerview);
         textViewStatus = (TextView) findViewById(R.id.txtStatus);
 
@@ -201,7 +200,8 @@ public class DetailsActivity extends AppCompatActivity {
                         Log.d("Volley_Error", error.toString());
                         System.out.println("Volley_Error " + error.toString());
                     }
-                }) {
+                })
+        {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
