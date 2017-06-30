@@ -67,6 +67,38 @@ public class ApiResponse {
         this.user_id = user_id;
     }
 
+    public String getHomepage_title() {
+        return homepage_title;
+    }
+
+    public void setHomepage_title(String homepage_title) {
+        this.homepage_title = homepage_title;
+    }
+
+    public String getHomepage_tagline() {
+        return homepage_tagline;
+    }
+
+    public void setHomepage_tagline(String homepage_tagline) {
+        this.homepage_tagline = homepage_tagline;
+    }
+
+    public String getHomepage_desc() {
+        return homepage_desc;
+    }
+
+    public void setHomepage_desc(String homepage_desc) {
+        this.homepage_desc = homepage_desc;
+    }
+
+    public String getHomepage_image() {
+        return homepage_image;
+    }
+
+    public void setHomepage_image(String homepage_image) {
+        this.homepage_image = homepage_image;
+    }
+
     @SerializedName("user_id")
     private String user_id;
     @SerializedName("user_name")
@@ -85,6 +117,15 @@ public class ApiResponse {
     private Integer success;
     @SerializedName("message")
     private String message;
+    @SerializedName("homepage_title")
+    private String homepage_title;
+    @SerializedName("homepage_tagline")
+    private String homepage_tagline;
+    @SerializedName("homepage_desc")
+    private String homepage_desc;
+    @SerializedName("homepage_image")
+    private String homepage_image;
+
 
     public String getUser_email() {
         return user_email;

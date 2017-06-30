@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -41,6 +43,10 @@
         </receiver>
 
         <service android:name=".Model.CheckRecentRun" />
+
+
+        <service android:name=".Model.DailyNotification" />
+
 
         <activity android:name=".NavigationPanel.MyActivities" />
         <activity android:name=".NavigationPanel.MyScore" />

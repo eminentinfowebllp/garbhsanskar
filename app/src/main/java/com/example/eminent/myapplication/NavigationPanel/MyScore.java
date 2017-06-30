@@ -5,6 +5,15 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +58,19 @@ public class MyScore extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
+    private int activitiesCount;
+
+
+    public static boolean isConnectd(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +112,13 @@ public class MyScore extends AppCompatActivity {
         System.out.println("Date " + string_date);
 
         prepareAPICall();
+        if (!isConnectd(this)) {
+            displayAlert();
+        }
+        else
+        {
+            prepareAPICall();
+        }
 
 
     }
@@ -128,6 +157,13 @@ public class MyScore extends AppCompatActivity {
                                      arcProgress.setProgress(completedCount);
 
 
+                                    activitiesCount = jsonArray.length();
+
+                                    System.out.println("arraylength "+ activitiesCount);
+
+                                     completedActvities.setText(String.valueOf(activitiesCount));
+                                     myscore.setText(String.valueOf(activitiesCount)+" / " +"10");
+                                     arcProgress.setProgress(activitiesCount);
 
                                 }
                                 else
@@ -173,5 +209,19 @@ public class MyScore extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+
+    public void displayAlert() {
+
+        new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
+                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
+                .setCancelable(true)
+                .setNeutralButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                            }
+                        })
+                .show();
     }
 }

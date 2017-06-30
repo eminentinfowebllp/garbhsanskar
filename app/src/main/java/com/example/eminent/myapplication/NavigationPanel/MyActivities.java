@@ -2,12 +2,18 @@ package com.example.eminent.myapplication.NavigationPanel;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -52,6 +58,15 @@ public class MyActivities extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
+    public static boolean isConnectd(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +101,14 @@ public class MyActivities extends AppCompatActivity {
         activityModelList = new ArrayList<>();
 
         prepareAPICall();
+        if (!isConnectd(this)) {
+            displayAlert();
+        }
+        else
+        {
+            prepareAPICall();
+        }
+
 //        prepareActivityData();
         activityAdapter = new MyActivitiesAdapter(this,activityModelList);
         recyclerView.setLayoutManager(new LinearLayoutManager(MyActivities.this));
@@ -170,6 +193,21 @@ public class MyActivities extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+
+    public void displayAlert() {
+
+        new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
+                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
+                .setCancelable(true)
+                .setNeutralButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                            }
+                        })
+                .show();
+    }
+
 
 
 }

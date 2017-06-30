@@ -51,11 +51,16 @@
                         android:layout_height="match_parent">
 
                         <ImageView
+
+                            android:id="@+id/homePageImage"
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:src="@drawable/bottomback"/>
 
                     </LinearLayout>
+
+
 
 
                     <LinearLayout
@@ -68,6 +73,10 @@
                         android:id="@+id/headerImgll">
 
                         <TextView
+
+
+                            android:id="@+id/homePageTitle"
+
                             style="@style/TextAppearance.AppCompat.Headline"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -77,6 +86,10 @@
                             android:textStyle="bold" />
 
                         <TextView
+
+
+                            android:id="@+id/homePageTagline"
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -202,6 +215,7 @@
                         android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
+
                     <TextView
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="match_parent"
@@ -210,7 +224,19 @@
                         android:padding="10dp"
                         android:text="@string/the_science_behind_garbh_sanskar" />
 
+                    <!--<TextView-->
+
+                    <!--<TextView-->
+                        <!--style="@style/TextAppearance.AppCompat.Medium"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:gravity="center"-->
+                        <!--android:padding="10dp"-->
+                        <!--android:text="@string/the_science_behind_garbh_sanskar" />-->
+
                     <TextView
+                        android:id="@+id/homePageDescription"
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -228,7 +254,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
+
         android:visibility="visible">
+
+        android:visibility="gone">
 
 
         <LinearLayout
@@ -259,6 +288,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|bottom"
                 android:src="@mipmap/ic_checked"/>
+                android:layout_gravity="bottom|center"
+                android:src="@drawable/ic_comment_text_black_24dp"/>
 
         </LinearLayout>
 
@@ -276,6 +307,7 @@
         </LinearLayout>
 
         </LinearLayout>
+
     </FrameLayout>
 
 

@@ -59,6 +59,7 @@
             android:layout_weight="0.2"
             android:text="10"
             android:gravity="center"
+            android:layout_gravity="center"
             android:textColor="@color/colorPrimary"
             android:textSize="17sp"/>
 
@@ -94,6 +95,7 @@
             android:layout_weight="0.2"
             android:text="--"
             android:gravity="center"
+            android:layout_gravity="center"
             android:textColor="@color/colorPrimary"
             android:textSize="17sp"/>
 
@@ -130,6 +132,7 @@
             android:layout_weight="0.2"
             android:text="--"
             android:gravity="center"
+            android:layout_gravity="center"
             android:textColor="@color/colorPrimary"
             android:textSize="17sp"/>
 
@@ -149,21 +152,54 @@
         android:layout_weight="0.7"
         android:gravity="center">
 
-        <com.github.lzyzsd.circleprogress.ArcProgress
+
+
+            <!--<TextView-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="0.13"/>-->
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="0.74"-->
+                <!--android:weightSum="1"-->
+                <!--android:orientation="vertical">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:layout_weight="0.25"/>-->
+
+                <com.github.lzyzsd.circleprogress.ArcProgress
             android:id="@+id/arc_progress"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="30dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             custom:arc_bottom_text="Score"
+            app:arc_text_size="60dp"
             app:arc_text_color="@color/colorPrimary"
             custom:arc_max="10"
+                    app:arc_suffix_text=" "
             app:arc_stroke_width="10dp"
             custom:arc_unfinished_color="@android:color/darker_gray"
             custom:arc_finished_color="@color/colorPrimary"
             custom:arc_bottom_text_size="40sp"/>
 
     </LinearLayout>
+                <!--<TextView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:layout_weight="0.25"/>-->
+
+
+            <!--</LinearLayout>-->
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.13"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+<!--</LinearLayout>-->

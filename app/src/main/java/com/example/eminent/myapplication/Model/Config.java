@@ -24,6 +24,13 @@ public class Config {
     public static final String ADDRESS = "address";
 
     public static final String DAILY_NOTI_ID = "notification_id";
+    public static final String HOMEPAGE_TITLE = "home_title";
+    public static final String HOMEPAGE_TAGLINE = "home_tagline";
+    public static final String HOMEPAGE_DESC = "home_description";
+    public static final String HOMEPAGE_IMAGE = "home_image";
+
+    public static final String DAILY_NOTI_COUNT= "notification_count";
+
 
 
 
