@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">GarbhSanskar</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="send_simple_notification">Send Simple Notification</string>
+    <string name="text">Lorem Ipsum
+"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
+"There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."
+
+What is Lorem Ipsum?
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+</string>
+    <string name="title_activity_description">DescriptionActivity</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+    <string name="view_profile"><u>View Profile</u></string>
+    <string name="alert_default_title">Day</string>
+    <string name="day_before_nyesterday">Day before yesterday</string>
+    <string name="welcome_to_garbhsanskar">WELCOME TO\nGARBHSANSKAR</string>
+    <string name="you_re_going_to_like_us">You\'re going to like us.</string>
+    <string name="text_desc">The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.</string>
+    <string name="the_science_behind_garbh_sanskar">The science behind Garbh Sanskar!</string>
+    <string name="introduction">INTRODUCTION</string>
+</resources>

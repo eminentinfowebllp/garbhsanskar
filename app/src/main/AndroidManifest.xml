@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.eminent.myapplication">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".SplashScreen.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.LoginActivity" />
+        <activity android:name=".Activity.HomeActivity" />
+        <activity
+            android:name=".Activity.DetailsActivity"
+            android:banner="@drawable/ic_logo"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activity.DescriptionActivity"
+            android:label="@string/title_activity_description"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activity.VideoActivity"
+            android:screenOrientation="landscape" />
+
+        <receiver android:name=".Model.AlarmReceiver">
+            <intent-filter>
+                <action android:name="android.media.action.DISPLAY_NOTIFICATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".Model.CheckRecentRun" />
+
+        <activity android:name=".NavigationPanel.MyActivities" />
+        <activity android:name=".NavigationPanel.MyScore" />
+        <activity android:name=".NavigationPanel.History" />
+        <activity android:name=".NavigationPanel.AboutUs" />
+        <activity android:name=".Activity.ViewprofileActivity" />
+
+    </application>
+
+</manifest>

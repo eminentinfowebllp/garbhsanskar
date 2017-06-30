@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_first_fragment"
+            android:title="My Activities"
+            android:icon="@drawable/ic_account_grey600_18dp"/>
+        <item
+            android:id="@+id/nav_second_fragment"
+            android:title="My Score"
+            android:icon="@drawable/ic_emoticon_excited_grey600_18dp"/>
+    </group>
+
+    <item android:title="Sub items">
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/sub_item_1"
+                    android:title="About us"
+                    android:icon="@drawable/ic_information_outline_grey600_18dp"/>
+
+                <item
+                    android:id="@+id/sub_item_2"
+                    android:title="Logout"
+                    android:icon="@drawable/ic_logout_grey600_18dp"/>
+
+            </group>
+
+        </menu>
+
+    </item>
+
+</menu>
