@@ -86,9 +86,9 @@ public class DetailsActivity extends AppCompatActivity {
         String userId = sharedPreferences.getString(Config.USER_ID, "");
 
 
-
-            if (!prgnancyDay.isEmpty() && !userId.isEmpty()) {
+            if (!userId.isEmpty()) {
                 getActivityfromAPI(prgnancyDay, userId);
+                System.out.println("pregnancy_day "+days);
 
         }
 

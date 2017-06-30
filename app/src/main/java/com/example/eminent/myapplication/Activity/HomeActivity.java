@@ -69,7 +69,6 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //eminentinfoweb
     private Toolbar toolbar;
     private CuboidButton buttonToday,buttonYesterday,buttonDaybfrystrday;
     private DrawerLayout mDrawer;
@@ -137,11 +136,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (sessionManager.checkLogin())
             finish();
 
-
         userId = sharedPreferences.getString(Config.USER_ID, "");
-
-
-
 
 //        ------------------------------ Daily Notification ---------------------------
 
