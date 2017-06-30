@@ -69,6 +69,7 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    //eminentinfoweb
     private Toolbar toolbar;
     private CuboidButton buttonToday,buttonYesterday,buttonDaybfrystrday;
     private DrawerLayout mDrawer;
