@@ -52,7 +52,7 @@ public class MyActivitiesAdapter extends RecyclerView.Adapter<MyActivitiesAdapte
 //        int Average = myActivitiesModel
         viewHolder.activityName.setText(myActivitiesModel.getActivities());
         viewHolder.activityAvg.setText(myActivitiesModel.getCompleted_activities()+"/"+myActivitiesModel.getTotal_activities());
-        viewHolder.arcProgress.setProgress(Integer.parseInt(String.format("%.0f", percentage)));
+        viewHolder.arcProgress.setProgress((int) Float.parseFloat(String.format("%.1f", percentage)));
 
         viewHolder.progressBar.setMax(Integer.parseInt(myActivitiesModel.getTotal_activities()));
         viewHolder.progressBar.setProgress(Integer.parseInt(myActivitiesModel.getCompleted_activities()));

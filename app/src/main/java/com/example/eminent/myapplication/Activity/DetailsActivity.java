@@ -54,7 +54,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SharedPreferences sharedPreferences;
     ProgressDialog progressDialog;
-    private long days;
+    private int days;
     public static final String KEY_DAY = "day";
     public static final String KEY_USERID = "user_id";
 
@@ -155,14 +155,15 @@ public class DetailsActivity extends AppCompatActivity {
                                     if (jsonObject.has("activity_image")) {
                                         JSONArray genreArry = jsonObject.getJSONArray("activity_image");
                                         ArrayList<String> genre = new ArrayList<String>();
+
                                         for (int j = 0; j < genreArry.length(); j++)
                                         {
                                             genre.add((String) genreArry.get(j));
                                         }
+
                                         model.setActivity_image(genre);
 
                                     }
-
 
                                     String activity_completed = jsonObject.getString("completed");
 
@@ -215,7 +216,7 @@ public class DetailsActivity extends AppCompatActivity {
         };
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
+                30000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

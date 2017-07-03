@@ -1,14 +1,11 @@
 package com.example.eminent.myapplication.Activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,11 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -42,7 +36,6 @@ import com.cuboid.cuboidcirclebutton.CuboidButton;
 import com.eminayar.panter.DialogType;
 import com.eminayar.panter.PanterDialog;
 import com.eminayar.panter.interfaces.OnSingleCallbackConfirmListener;
-import com.example.eminent.myapplication.Adapter.ActivityAdapter;
 import com.example.eminent.myapplication.Model.ActivityModel;
 
 import com.example.eminent.myapplication.Model.CheckRecentRun;
@@ -69,15 +62,17 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    //eminentinfoweb
     private Toolbar toolbar;
     private CuboidButton buttonToday,buttonYesterday,buttonDaybfrystrday;
     private DrawerLayout mDrawer;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
-    private TextView textView,textViewProfile,textViewUsername;
+    private TextView textViewDays,textViewProfile,textViewUsername;
     private TextView homepage_title, homepage_tagline, homepage_desc;
     private ImageView homepage_image;
     private long days;
+    private int total_pregnecydays;
 
     private final static String TAG = "MainActivity";
     public final static String PREFS = "PrefsFile";
@@ -100,7 +95,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private String homeTitle, homeTagline, homeDesc, homeImage;
     private int completedCount;
     private ProgressDialog progressDialog;
-    private int pregnency_days;
+    private String thatDay_pregnency_days;
 
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -203,7 +198,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         textViewProfile = (TextView) view.findViewById(R.id.txtViewprofile);
 
-
         textViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,33 +236,41 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         toolbar.setNavigationIcon(R.mipmap.ic_sort_black_24dp);
 
-        textView = (TextView) findViewById(R.id.dayTv);
+        textViewDays = (TextView) findViewById(R.id.dayTv);
 
         if (sessionManager.isLoggedIn())
         {
-            sendNotification();
+//            sendNotification();
 
             homeTitle = sharedPreferences.getString(Config.HOMEPAGE_TITLE, "");
             homeTagline = sharedPreferences.getString(Config.HOMEPAGE_TAGLINE, "");
             homeDesc = sharedPreferences.getString(Config.HOMEPAGE_DESC, "");
             homeImage = sharedPreferences.getString(Config.HOMEPAGE_IMAGE, "");
 
-            pregnency_days = Integer.parseInt(sharedPreferences.getString(Config.PREGNANCY_DAY, ""));
-//            String month = sharedPreferences.getString(Config.PREGNANCY_MONTH, "");
-//            String year = sharedPreferences.getString(Config.PREGNANCY_YEAR, "");
+            thatDay_pregnency_days = sharedPreferences.getString(Config.PREGNANCY_DAY,"");
+            System.out.println("pregVal "+ thatDay_pregnency_days);
+
+            String day = sharedPreferences.getString(Config._DAY, "");
+            String month = sharedPreferences.getString(Config._MONTH, "");
+            String year = sharedPreferences.getString(Config._YEAR, "");
+
+            Calendar thatDay = Calendar.getInstance();
+            thatDay.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+            thatDay.set(Calendar.MONTH, Integer.parseInt(month)); // 0-11 so 1 less
+            thatDay.set(Calendar.YEAR, Integer.parseInt(year));
 //
-//            Calendar thatDay = Calendar.getInstance();
-//            thatDay.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-//            thatDay.set(Calendar.MONTH, Integer.parseInt(month)-1); // 0-11 so 1 less
-//            thatDay.set(Calendar.YEAR, Integer.parseInt(year));
+            Calendar today = Calendar.getInstance();
 //
-//            Calendar today = Calendar.getInstance();
-//
-//            long diff = today.getTimeInMillis() - thatDay.getTimeInMillis();
-//
-//            days = diff / (24 * 60 * 60 * 1000);
-            textView.setText("Day " + pregnency_days);
-//            userEditor.putString(Config.ACTUAL_DAY, String.valueOf(days)).apply();
+            long diff = today.getTimeInMillis() - thatDay.getTimeInMillis();
+            System.out.println("todayD "+today.getTimeInMillis());
+
+            days = diff / (24 * 60 * 60 * 1000);
+            System.out.println("diffDays "+days);
+
+            total_pregnecydays = Integer.parseInt(thatDay_pregnency_days) + (int) days;
+            textViewDays.setText("Day " + total_pregnecydays);
+
+            userEditor.putString(Config.ACTUAL_DAY, String.valueOf(total_pregnecydays)).apply();
 
             if (homeTitle!=null)
             {
@@ -432,6 +434,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new PanterDialog(this)
                 .setHeaderBackground(R.color.colorPrimary)
                 .setDialogType(DialogType.SINGLECHOICE)
+                .isCancelable(true)
                 .setTitle("Select Language ")
                 .isCancelable(false)
                 .items(R.array.dialog_choices, new OnSingleCallbackConfirmListener() {
@@ -446,7 +449,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         }else
                         {
                             //languageAPICall(pos);
-
                         }
 //                        Toast.makeText(HomeActivity.this, "position : " + String.valueOf(pos) +
 //                                        " value = " + text,
@@ -467,26 +469,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          else if(viewAction == buttonToday)
         {
             Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", pregnency_days);
+            intent.putExtra("days", total_pregnecydays);
             startActivity(intent);
 
-            System.out.println("days_ "+pregnency_days);
+            System.out.println("days_ "+ total_pregnecydays);
         }
         else if (viewAction == buttonYesterday)
         {
             Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", pregnency_days-1);
+            intent.putExtra("days", total_pregnecydays-1);
             startActivity(intent);
 
-            System.out.println("days_ "+pregnency_days);
+            System.out.println("days_ "+ thatDay_pregnency_days);
         }
         else if (viewAction == buttonDaybfrystrday)
         {
             Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", pregnency_days-2);
+            intent.putExtra("days", total_pregnecydays-2);
             startActivity(intent);
 
-            System.out.println("days_ "+pregnency_days);
+            System.out.println("days_ "+ thatDay_pregnency_days);
         }
     }
 
@@ -560,7 +562,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //                                    activityModelList.add(model);
 
                                 }
-
 
                             }
 

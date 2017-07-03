@@ -9,7 +9,7 @@ public class Config {
     public static final String PREF_NAME = "user_preference";
 
     public static final String PREGNANCY_DATE = "date";
-    public static final String PREGNANCY_DAY = "day";
+    public static final String PREGNANCY_DAY = "pregnancy_day";
     public static final String PREGNANCY_MONTH = "month";
     public static final String PREGNANCY_YEAR = "year";
     public static final String ACTUAL_DAY = "actual_day";
@@ -31,7 +31,9 @@ public class Config {
 
     public static final String DAILY_NOTI_COUNT= "notification_count";
 
-
+    public static final String _DAY = "day";
+    public static final String _MONTH = "month";
+    public static final String _YEAR = "year";
 
 
 }

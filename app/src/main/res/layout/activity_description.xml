@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,6 +18,7 @@
         app:theme="@style/toolbar_theme">
 
         <TextView
+            android:id="@+id/activityTitleTv"
             style="@android:style/TextAppearance.DeviceDefault.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,63 +35,63 @@
         android:layout_height="0dp"
         android:layout_weight="0.82">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:id="@+id/sliderLayout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <android.support.v4.view.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:id="@+id/activityImage"
-            android:visibility="gone"/>
-
-            <LinearLayout
-                android:id="@+id/ll_dots"
+            <RelativeLayout
+                android:id="@+id/sliderLayout"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="20dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone"/>
+                android:layout_height="300dp"
+                android:visibility="gone">
 
-        </RelativeLayout>
+                <android.support.v4.view.ViewPager
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:id="@+id/activityImage"
+                    android:visibility="gone"/>
 
-        <WebView
-            android:id="@+id/webviewDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible"/>
+                <LinearLayout
+                    android:id="@+id/ll_dots"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone"/>
 
-        <RelativeLayout
-            android:id="@+id/RelativeVideoLayout"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:visibility="gone">
+            </RelativeLayout>
 
-            <VideoView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_margin="5dp"
-            android:layout_gravity="center"
-            android:id="@+id/vView"
-            android:visibility="gone"/>
+            <WebView
+                android:id="@+id/webviewDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"/>
 
-            <!--<ImageView-->
+            <RelativeLayout
+                android:id="@+id/RelativeVideoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:visibility="gone">
+
+                <VideoView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/vView"
+                    android:visibility="gone"/>
+
+                <!--<ImageView-->
                 <!--android:id="@+id/imgVideoImage"-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="200dp"-->
                 <!--android:scaleType="fitXY"-->
                 <!--android:visibility="gone"/>-->
 
-            <!--<ImageView-->
+                <!--<ImageView-->
                 <!--android:id="@+id/imgVideoPlayIcon"-->
                 <!--android:layout_width="35dp"-->
                 <!--android:layout_height="35dp"-->
@@ -101,33 +101,33 @@
                 <!--android:tint="@android:color/darker_gray"-->
                 <!--android:visibility="visible" />-->
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp">
 
-                <ImageView
-                    android:id="@+id/imgVideoPlayIcon"
+                    <ImageView
+                        android:id="@+id/imgVideoPlayIcon"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="5dp"
+                        android:src="@mipmap/ic_fullscreen_white_24dp"
+                        android:tint="@android:color/darker_gray"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+                <ProgressBar
+                    android:id="@+id/progressBar"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_gravity="end"
-                    android:layout_margin="5dp"
-                    android:src="@mipmap/ic_fullscreen_white_24dp"
-                    android:tint="@android:color/darker_gray"
-                    android:visibility="gone" />
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:tint="@color/colorPrimaryDark"
+                    android:visibility="gone"/>
 
-            </FrameLayout>
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:tint="@color/colorPrimaryDark"
-                android:visibility="gone"/>
+            </RelativeLayout>
 
-        </RelativeLayout>
-
-    </LinearLayout>
+        </LinearLayout>
 
     </ScrollView>
 

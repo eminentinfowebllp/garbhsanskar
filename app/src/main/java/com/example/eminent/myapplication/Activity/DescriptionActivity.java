@@ -2,17 +2,13 @@ package com.example.eminent.myapplication.Activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -66,27 +62,20 @@ public class DescriptionActivity extends AppCompatActivity {
     private TextView[] dots;
     private RelativeLayout sliderLayout,videoLayout;
     private ImageView videoPlayIcon, videoImg;
+    private TextView activityTitle;
+
     public static final String KEY_USERID = "user_id";
     public static final String KEY_ACTIVITYID = "activity_id";
-    public ProgressBar progressBar;
-    private String activity_videoURL;
-// = "https://ak9.picdn.net/shutterstock/videos/14634679/preview/stock-footage-pregnant-woman-reading-a-book.mp4";
 
-    public static boolean isConnectd(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
-                && cm.getActiveNetworkInfo().isConnected()) {
-            return true;
-        }
-        return false;
-    }
+    public ProgressBar progressBar;
+    private String activity_videoURL,activity_title;
+
+    // = "https://ak9.picdn.net/shutterstock/videos/14634679/preview/stock-footage-pregnant-woman-reading-a-book.mp4";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
-
-
 
         sharedPreferences = getSharedPreferences(Config.PREF_NAME,MODE_PRIVATE);
 
@@ -101,6 +90,7 @@ public class DescriptionActivity extends AppCompatActivity {
 //        videoImg = (ImageView) findViewById(R.id.imgVideoImage);
         videoPlayIcon = (ImageView) findViewById(R.id.imgVideoPlayIcon);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        activityTitle = (TextView) findViewById(R.id.activityTitleTv);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
@@ -129,11 +119,17 @@ public class DescriptionActivity extends AppCompatActivity {
             activity_completed = intent.getStringExtra("activity_completed");
             activity_image = intent.getStringArrayListExtra("activity_image");
             activity_videoURL = intent.getStringExtra("activity_video");
+            activity_title = intent.getStringExtra("activity_title");
             webView.getSettings().setJavaScriptEnabled(true);
             webView.loadData(webviewContent, "text/html", "UTF-8");
             System.out.println("imageAct "+activity_image);
             initialProgressdialog.dismiss();
 
+        }
+
+        if (activity_title!=null)
+        {
+            activityTitle.setText(activity_title);
         }
 
         if (activity_image!=null)
@@ -144,6 +140,7 @@ public class DescriptionActivity extends AppCompatActivity {
             sliderAdapter = new SliderAdapter(DescriptionActivity.this, activity_image);
             acvitivityImageView.setAdapter(sliderAdapter);
             addBottomDots(0);
+
             acvitivityImageView.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -159,6 +156,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 public void onPageScrollStateChanged(int state) {
 
                 }
+
             });
         }
 
@@ -193,9 +191,9 @@ public class DescriptionActivity extends AppCompatActivity {
             videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 // Close the progress bar and play the video
                 public void onPrepared(MediaPlayer mp) {
-                progressBar.setVisibility(View.GONE);
-                mp.start();
-                videoview.start();
+                    progressBar.setVisibility(View.GONE);
+                    mp.start();
+                    videoview.start();
 
                 }
             });
@@ -224,16 +222,7 @@ public class DescriptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (!isConnectd(DescriptionActivity.this))
-                  {
-                    displayAlert();
-
-                  }
-                  else
-                {
-                    callCompleteAPI();
-
-                }
+                callCompleteAPI();
 
             }
         });
@@ -327,20 +316,6 @@ public class DescriptionActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    public void displayAlert() {
-
-        new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
-                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
-                .setCancelable(true)
-                .setNeutralButton("Ok",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                dialog.dismiss();
-                            }
-                        })
-                .show();
     }
 
 }

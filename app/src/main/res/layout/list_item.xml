@@ -21,19 +21,27 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/completedLl"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.999"
                 android:weightSum="1"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageLogo"
+                <com.mikhaellopez.circularimageview.CircularImageView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="0.2"
-                    android:layout_gravity="center"
+                    android:id="@+id/imageLogo"
                     android:src="@mipmap/ic_launcher"
-                    android:layout_height="wrap_content" />
+                    />
+                <!--<ImageView-->
+                    <!--android:id="@+id/imageLogo"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_weight="0.2"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:src="@mipmap/ic_launcher"-->
+                    <!--android:layout_height="wrap_content" />-->
 
             <TextView
                 android:id="@+id/titleTxt"

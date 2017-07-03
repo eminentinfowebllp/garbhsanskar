@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1"
+        android:background="@color/colorPrimary"
         app:theme="@style/toolbar_theme">
 
         <TextView
@@ -22,12 +23,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="My Score"
-            android:textColor="@color/colorAccent"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
     </android.support.v7.widget.Toolbar>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +36,8 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-    <LinearLayout
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.07"
@@ -44,15 +45,15 @@
         android:weightSum="1"
         android:layout_margin="10dp">
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:text="Total Activities"
-        android:layout_gravity="center"
-        android:textSize="17sp"/>
+            <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:text="Total Activities"
+            android:layout_gravity="center"
+            android:textSize="17sp"/>
 
-        <TextView
+            <TextView
             android:id="@+id/totalActivitesTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -63,7 +64,45 @@
             android:textColor="@color/colorPrimary"
             android:textSize="17sp"/>
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.03dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#ACACAC"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.07"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:text="Completed Activities"
+                android:layout_gravity="center"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/completedActivitiesTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="--"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="17sp"/>
+
+
+        </LinearLayout>
+
 
         <View
             android:layout_width="match_parent"
@@ -81,69 +120,33 @@
         android:layout_margin="10dp">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:text="Completed Activities"
-            android:layout_gravity="center"
-            android:textSize="17sp"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.8"
+        android:text="My Score"
+        android:layout_gravity="center"
+        android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/completedActivitiesTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="--"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textColor="@color/colorPrimary"
-            android:textSize="17sp"/>
+        android:id="@+id/myScoreTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:text="--"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="17sp"/>
 
-
-    </LinearLayout>
+        </LinearLayout>
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="0.03dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="#ACACAC"/>
-
-    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.07"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:layout_margin="10dp">
+        android:layout_height="0.03dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:text="My Score"
-            android:layout_gravity="center"
-            android:textSize="17sp" />
 
-        <TextView
-            android:id="@+id/myScoreTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="--"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textColor="@color/colorPrimary"
-            android:textSize="17sp"/>
-
-    </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.03"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
 
 
         <LinearLayout
@@ -152,54 +155,23 @@
         android:layout_weight="0.7"
         android:gravity="center">
 
-
-
-            <!--<TextView-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="0.13"/>-->
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="0.74"-->
-                <!--android:weightSum="1"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="0dp"-->
-                    <!--android:layout_weight="0.25"/>-->
-
-                <com.github.lzyzsd.circleprogress.ArcProgress
+            <com.github.lzyzsd.circleprogress.ArcProgress
             android:id="@+id/arc_progress"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
             custom:arc_bottom_text="Score"
             app:arc_text_size="60dp"
             app:arc_text_color="@color/colorPrimary"
             custom:arc_max="10"
-                    app:arc_suffix_text=" "
+                app:arc_suffix_text=" "
             app:arc_stroke_width="10dp"
             custom:arc_unfinished_color="@android:color/darker_gray"
             custom:arc_finished_color="@color/colorPrimary"
             custom:arc_bottom_text_size="40sp"/>
 
-    </LinearLayout>
-                <!--<TextView-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="0dp"-->
-                    <!--android:layout_weight="0.25"/>-->
-
-
-            <!--</LinearLayout>-->
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.13"/>
-
         </LinearLayout>
 
     </LinearLayout>
-<!--</LinearLayout>-->
+
+    </LinearLayout>
+

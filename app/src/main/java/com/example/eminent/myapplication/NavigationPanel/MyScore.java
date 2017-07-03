@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -46,7 +47,7 @@ import java.util.Map;
 public class MyScore extends AppCompatActivity {
 
     private static final String KEY_USERID = "user_id";
-    private static final String KEY_DATE = "date";
+    private static final String KEY_DAY = "day";
 
     private String string_date;
     private ProgressDialog progressDialog;
@@ -54,7 +55,7 @@ public class MyScore extends AppCompatActivity {
     private int completedCount,totalCount;
     private MyActivitiesModel myActivitiesModel;
     private ArcProgress arcProgress;
-    private String userId;
+    private String userId, pregnancy_day;
 
     private SharedPreferences sharedPreferences;
 
@@ -78,6 +79,7 @@ public class MyScore extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userId = sharedPreferences.getString(Config.USER_ID, "");
+        pregnancy_day = sharedPreferences.getString(Config.PREGNANCY_DAY, "");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -128,7 +130,7 @@ public class MyScore extends AppCompatActivity {
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofdate.php",
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofday.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
@@ -147,19 +149,14 @@ public class MyScore extends AppCompatActivity {
 
                                     JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
 
-                                     completedCount = jsonArray.getInt(0);
-                                     totalCount = jsonArray.getInt(1);
+                                    int completed_activity = jsonArray.length();
 
-                                     myActivitiesModel.setCompleted_activity_score(completedCount);
-
-                                     completedActvities.setText(String.valueOf(completedCount));
-                                     myscore.setText(String.valueOf(completedCount)+" / " +"10");
-                                     arcProgress.setProgress(completedCount);
-
+                                     System.out.println("arrayLen "+completed_activity);
+                                     completedActvities.setText(String.valueOf(completed_activity));
+                                     myscore.setText(String.valueOf(completed_activity)+" / " +"10");
+                                     arcProgress.setProgress(completed_activity);
 
                                     activitiesCount = jsonArray.length();
-
-                                    System.out.println("arraylength "+ activitiesCount);
 
                                      completedActvities.setText(String.valueOf(activitiesCount));
                                      myscore.setText(String.valueOf(activitiesCount)+" / " +"10");
@@ -199,13 +196,20 @@ public class MyScore extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+
+                System.out.println("pregnencyDAY "+pregnancy_day);
                 params.put(KEY_USERID, userId);
-                params.put(KEY_DATE, string_date);
+                params.put(KEY_DAY, pregnancy_day);
 
                 return params;
             }
 
         };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);

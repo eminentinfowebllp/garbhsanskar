@@ -3,11 +3,13 @@ package com.example.eminent.myapplication.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.eminent.myapplication.Activity.DescriptionActivity;
@@ -53,6 +55,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         {
             holder.imageView.setVisibility(View.VISIBLE);
             holder.imageView.setImageResource(R.mipmap.ic_completed);
+            holder.linearLayout.setAlpha(0.5f);
         }
         holder.title.setText(model.getActivity_title());
     }
@@ -66,11 +69,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
         public TextView title;
         public ImageView imageView;
+        public LinearLayout linearLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.titleTxt);
             imageView = (ImageView) itemView.findViewById(R.id.imageComplete);
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.completedLl);
+
             itemView.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -84,6 +90,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                     intent.putExtra("activity_completed",activityModelList.get(position).getActivity_completed());
                     intent.putExtra("activity_video",activityModelList.get(position).getActivity_video());
                     intent.putExtra("activity_image",activityModelList.get(position).getActivity_image());
+                    intent.putExtra("activity_title",activityModelList.get(position).getActivity_title());
 
                     System.out.println ("adapter position "+position);
                     mContext.startActivity(intent);

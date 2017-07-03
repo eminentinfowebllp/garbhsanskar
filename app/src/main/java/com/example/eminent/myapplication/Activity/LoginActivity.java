@@ -35,8 +35,11 @@ import com.example.eminent.myapplication.Retrofit.APIService;
 import com.example.eminent.myapplication.Retrofit.ApiClient;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
@@ -47,10 +50,11 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button joinnowButton;
+    private Button joinnowButton, freeDemoButton;
     private EditText edittextId;
     private Toolbar toolbar;
     private String id = "1234";
+    private String string_date;
 
     private int currentNotificationID = 0;
     private NotificationManager notificationManager;
@@ -86,12 +90,20 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         joinnowButton = (Button) findViewById(R.id.joinnowButton);
+        freeDemoButton = (Button) findViewById(R.id.demoButton);
         edittextId = (EditText) findViewById(R.id.codeEdittext);
 
         joinnowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 login();
+            }
+        });
+
+        freeDemoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                oncelogin();
             }
         });
 
@@ -108,10 +120,14 @@ public class LoginActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_back);
     }
 
+    private void oncelogin() {
+
+    }
+
     private void login() {
 
         if (validate() == false) {
-            onLoginFailed();
+//            onLoginFailed();
             return;
         }
 
@@ -122,7 +138,6 @@ public class LoginActivity extends AppCompatActivity {
         }else {
             loginByServer();
         }
-
 
 
     }
@@ -140,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         APIService service = ApiClient.getClient().create(APIService.class);
 
         service.userLogIn(unniqueId).enqueue(new Callback<ApiResponse>() {
+
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
 
@@ -167,7 +183,6 @@ public class LoginActivity extends AppCompatActivity {
                     String homepage_desc = response.body().getHomepage_desc();
                     String homepage_image = response.body().getHomepage_image();
 
-
                     editor.putString(Config.USER_ID, user_id);
                     editor.putString(Config.NAME, user_name);
                     editor.putString(Config.ADDRESS, user_address);
@@ -182,11 +197,11 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString(Config.HOMEPAGE_IMAGE, homepage_image);
 
                     editor.commit();
+
                 } else {
                     String message = response.body().getMessage();
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
-
 
             }
 
@@ -229,7 +244,24 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
 
                         Toast.makeText(LoginActivity.this, "Welcome to Garbhsanskar", Toast.LENGTH_SHORT).show();
+                        System.out.println("numpick "+numberPicker.getValue());
                         editor.putString(Config.PREGNANCY_DAY, String.valueOf(numberPicker.getValue())).apply();
+
+                        Date theDate = new Date();
+
+                        Calendar myCal = new GregorianCalendar();
+                        myCal.setTime(theDate);
+
+                        String day = String.valueOf(myCal.get(Calendar.DAY_OF_MONTH));
+                        String month = String.valueOf(myCal.get(Calendar.MONTH));
+                        String year = String.valueOf(myCal.get(Calendar.YEAR));
+                        System.out.println("Day: " + day);
+                        System.out.println("Month: " + month);
+                        System.out.println("Year: " + year);
+
+                        editor.putString(Config._DAY, day).apply();
+                        editor.putString(Config._MONTH, month).apply();
+                        editor.putString(Config._YEAR, year).apply();
 
                     }
                 })
@@ -276,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
         icon = BitmapFactory.decodeResource(this.getResources(),
                 R.mipmap.ic_launcher);
 
-        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        Intent notificationIntent = new Intent(this, HomeActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(contentIntent);
         Notification notification = notificationBuilder.build();
