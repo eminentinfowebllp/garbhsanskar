@@ -3,8 +3,9 @@
     package="com.example.eminent.myapplication">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -51,7 +52,6 @@
         <service android:name=".Model.CheckRecentRun" />
 
         <service android:name=".Model.DailyNotification" />
-
 
         <activity android:name=".NavigationPanel.MyActivities" />
         <activity android:name=".NavigationPanel.MyScore" />

@@ -66,20 +66,41 @@ public class DailyNotification extends Service {
         userId = sharedPreferences.getString(Config.USER_ID, "");
         pregnancy_day = sharedPreferences.getString(Config.ACTUAL_DAY, "");
 
+        SharedPreferences settings = getSharedPreferences(HomeActivity.PREFS, MODE_PRIVATE);
+
+        // Are notifications enabled?
+        if (settings.getBoolean("enabled", true)) {
+            // Is it time for a notification?
+            if (settings.getLong("DailylastRun", Long.MAX_VALUE) < System.currentTimeMillis() - delay)
 
                 if (!userId.isEmpty()) {
 
+                    userEditor.remove(Config.DAILY_NOTI_COUNT);
+                    userEditor.apply();
+
                     prepareAPICall(userId, pregnancy_day);
                     Toast.makeText(this, "hi", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
-
-                    Log.i(TAG, "Notifications are disabled");
                 }
+        } else
+        {
+            Log.i(TAG, "Notifications are disabled");
+        }
+
+//        if (!userId.isEmpty()) {
+//
+//                    userEditor.remove(Config.DAILY_NOTI_COUNT);
+//                    userEditor.apply();
+//
+//                    prepareAPICall(userId, pregnancy_day);
+//                    Toast.makeText(this, "hi", Toast.LENGTH_SHORT).show();
+//                } else {
+//
+//                    Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
+//
+//                    Log.i(TAG, "Notifications are disabled");
+//                }
 
                 stopSelf();
-
     }
 
 
@@ -89,8 +110,7 @@ public class DailyNotification extends Service {
         @SuppressWarnings("deprecation")
         Notification noti = new Notification.Builder(this)
                 .setAutoCancel(true)
-                .setContentIntent(PendingIntent.getActivity(this, 1, mainIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(this, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setContentTitle("Garbh Sanskar")
                 .setContentText(completedCount + " "+"Activities Completed")
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -108,19 +128,18 @@ public class DailyNotification extends Service {
 
     public void setAlarm(int completedCount) {
 
-        userEditor.remove(Config.DAILY_NOTI_COUNT);
-        userEditor.apply();
 
         userEditor.putString(Config.DAILY_NOTI_COUNT, String.valueOf(completedCount)).apply();
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
 
+        System.out.println("completedcount" + sharedPreferences.getString(Config.DAILY_NOTI_COUNT,"") );
         int ID = (int) System.currentTimeMillis();
         alarmIntent.putExtra("ID",ID);
         Log.d("setRepeatedNotification", "ID:" + ID);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, ID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
         Calendar now = Calendar.getInstance();

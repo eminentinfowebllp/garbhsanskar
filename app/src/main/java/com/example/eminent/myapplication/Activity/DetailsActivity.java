@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.eminent.myapplication.Adapter.ActivityAdapter;
+import com.example.eminent.myapplication.Model.AbstractClass;
 import com.example.eminent.myapplication.Model.ActivityModel;
 import com.example.eminent.myapplication.Model.Common;
 import com.example.eminent.myapplication.Model.Config;
@@ -55,8 +56,11 @@ public class DetailsActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     ProgressDialog progressDialog;
     private int days;
+
     public static final String KEY_DAY = "day";
     public static final String KEY_USERID = "user_id";
+
+    private AbstractClass abstractClass;
 
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -72,6 +76,8 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        abstractClass = new AbstractClass(getApplicationContext());
+
         Intent intent = getIntent();
         days = intent.getIntExtra("days",0);
         recyclerView = (RecyclerView) findViewById(R.id.recyvlerview);
@@ -83,12 +89,14 @@ public class DetailsActivity extends AppCompatActivity {
 
         String prgnancyDay = sharedPreferences.getString(Config.ACTUAL_DAY, "");
         String userId = sharedPreferences.getString(Config.USER_ID, "");
+        String dialog_pos = sharedPreferences.getString(Config.DIALOG_POSITION, "");
 
+        System.out.println("dialog_pos" +dialog_pos);
+        activityModelList = new ArrayList<>();
+        abstractClass.languageAPICall(Integer.parseInt(dialog_pos),activityModelList);
 
 //            if (!userId.isEmpty()) {
-                getActivityfromAPI(prgnancyDay, userId);
-
-
+//                getActivityfromAPI(prgnancyDay, userId);
 //        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -110,8 +118,8 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
-        activityModelList = new ArrayList<>();
 
+        activityAdapter = new ActivityAdapter(DetailsActivity.this, activityModelList);
         recyclerView.setLayoutManager(new LinearLayoutManager(DetailsActivity.this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 

@@ -24,20 +24,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cuboid.cuboidcirclebutton.CuboidButton;
 import com.eminayar.panter.DialogType;
 import com.eminayar.panter.PanterDialog;
 import com.eminayar.panter.interfaces.OnSingleCallbackConfirmListener;
-import com.example.eminent.myapplication.Model.ActivityModel;
+import com.example.eminent.myapplication.Model.AbstractClass;
 
 import com.example.eminent.myapplication.Model.CheckRecentRun;
 import com.example.eminent.myapplication.Model.Common;
@@ -48,17 +41,10 @@ import com.example.eminent.myapplication.NavigationPanel.MyActivities;
 import com.example.eminent.myapplication.NavigationPanel.MyScore;
 import com.example.eminent.myapplication.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -75,12 +61,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private long days;
     private int total_pregnecydays;
     private String freeDemoDays;
+    private int dialog_position;
 
     private final static String TAG = "MainActivity";
     public final static String PREFS = "PrefsFile";
 
-    private SharedPreferences settings = null;//for notification
-    private SharedPreferences.Editor editor = null;//for noification
+    private SharedPreferences settings = null;//for 3 day notification
+    private SharedPreferences.Editor editor = null;//for 3 day noification
+
+    private SharedPreferences Dailysettings = null;//for daily notification
+    private SharedPreferences.Editor Dailyeditor = null;//for daily noification
 
     private static String KEY_LANGUAGE_ID = "";
 
@@ -99,6 +89,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressDialog progressDialog;
     private String thatDay_pregnency_days;
 
+    private AbstractClass abstractClass;
+
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
@@ -113,6 +105,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        abstractClass = new AbstractClass(getApplicationContext());
 
         sessionManager = new SessionManager(getApplicationContext());
 
@@ -147,6 +140,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Date date = new Date();
         string_date = dateFormat.format(date);
 
+        Dailysettings = getSharedPreferences(PREFS, MODE_PRIVATE);
+        Dailyeditor = Dailysettings.edit();
+
+        if (!Dailysettings.contains("DailylastRun"))
+        {
+            Toast.makeText(this, "daily 1", Toast.LENGTH_SHORT).show();
+            enableDailyNotification(null);
+        }
+        else
+        {
+            recordDailyRunTime();
+            Toast.makeText(this, "daily 2", Toast.LENGTH_SHORT).show();
+
+        }
+
+        startService(new Intent(this, DailyNotification.class));
 
 //        prepareCompletedActivityAPICall();
 
@@ -269,9 +278,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 thatDay.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
                 thatDay.set(Calendar.MONTH, Integer.parseInt(month)); // 0-11 so 1 less
                 thatDay.set(Calendar.YEAR, Integer.parseInt(year));
-//
+
                 Calendar today = Calendar.getInstance();
-//
+
                 long diff = today.getTimeInMillis() - thatDay.getTimeInMillis();
 
                 days = diff / (24 * 60 * 60 * 1000);
@@ -329,8 +338,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         userEditor.putString(Config.ACTUAL_DAY, String.valueOf(total_pregnecydays)).apply();
-        sendNotification();
+//        sendNotification();
 
+    }
+
+    private void recordDailyRunTime() {
+        Dailyeditor.putLong("DailylastRun", System.currentTimeMillis());
+        Dailyeditor.commit();
+    }
+
+    private void enableDailyNotification(Object o) {
+        Dailyeditor.putLong("DailylastRun", System.currentTimeMillis());
+        Dailyeditor.putBoolean("enabled", true);
+        Dailyeditor.commit();
+        Log.v(TAG, "Notifications enabled");
     }
 
     private void recordRunTime() {
@@ -470,7 +491,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 .setHeaderBackground(R.color.colorPrimary)
                 .setDialogType(DialogType.SINGLECHOICE)
                 .isCancelable(true)
-                .setTitle("Select Language ")
+                .setTitle("Select Language")
                 .isCancelable(false)
                 .items(R.array.dialog_choices, new OnSingleCallbackConfirmListener() {
 
@@ -487,16 +508,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             //languageAPICall(pos);
                         }else
                         {
-
+                            dialog_position = pos;
+                            Toast.makeText(HomeActivity.this, "position : " + String.valueOf(dialog_position) +
+                                        " value = " + text,
+                                Toast.LENGTH_LONG).show();
+                            userEditor.putString(Config.DIALOG_POSITION,String.valueOf(dialog_position));
                         }
-//                        Toast.makeText(HomeActivity.this, "position : " + String.valueOf(pos) +
-//                                        " value = " + text,
-//                                Toast.LENGTH_LONG).show();
+
                     }
 
                 })
                 .show();
-
     }
 
     @Override
@@ -517,10 +539,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             startActivity(intent);
 
-
         }
 
         else if (viewAction == buttonYesterday)
+
         {
             if (userId.isEmpty())
             {
@@ -533,6 +555,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
+
         else if (viewAction == buttonDaybfrystrday)
         {
             if (userId.isEmpty())
@@ -549,174 +572,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void languageAPICall(final int pos) {
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-
-                        String imageArray = null;
-                        String activity_desc = null;
-
-
-                        try {
-                            JSONObject rootObject = new JSONObject(s);
-                            int successCode = rootObject.getInt("success");
-                            if (successCode == 1) {
-                                JSONObject childObject = rootObject.getJSONObject("activitydata");
-                                JSONArray jsonArray = childObject.getJSONArray("activities");
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                                    String activity_id = jsonObject.getString("activity_id");
-                                    String activity_day = jsonObject.getString("activity_day");
-                                    String activity_title = jsonObject.getString("activity_title");
-                                    String activity_video = jsonObject.getString("activity_video");
-                                    String activity_status = jsonObject.getString("activity_status");
-                                    String activity_added_date = jsonObject.getString("activity_added_date");
-//                                    String activity_desc = jsonObject.getString("activity_desc_eng");
-                                    if (pos == 0)
-                                    {
-                                         activity_desc = jsonObject.getString("activity_desc_eng");
-
-                                    }else if(pos == 1)
-                                    {
-                                         activity_desc = jsonObject.getString("activity_desc_hindi");
-
-                                    }else if (pos == 2)
-                                    {
-                                         activity_desc = jsonObject.getString("activity_desc_guj");
-                                    }
-
-                                    ActivityModel model = new ActivityModel();
-                                    ArrayList<String> imagList = new ArrayList<String>();
-
-                                    if (jsonObject.has("activity_image")) {
-                                        JSONArray genreArry = jsonObject.getJSONArray("activity_image");
-                                        ArrayList<String> genre = new ArrayList<String>();
-                                        for (int j = 0; j < genreArry.length(); j++)
-                                        {
-                                            genre.add((String) genreArry.get(j));
-                                        }
-                                        model.setActivity_image(genre);
-
-                                    }
-
-
-                                    String activity_completed = jsonObject.getString("completed");
-
-                                    model.setActivity_id(activity_id);
-                                    model.setActivity_date(activity_day);
-                                    model.setActivity_title(activity_title);
-                                    model.setActivity_desc(activity_desc);
-                                    model.setActivity_video(activity_video);
-                                    model.setActivity_status(activity_status);
-                                    model.setActivity_added_date(activity_added_date);
-                                    model.setActivity_completed(activity_completed);
-
-//                                    activityModelList.add(model);
-
-                                }
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
-                        Log.d("Volley_Error", error.toString());
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-
-                params.put(KEY_DAY, String.valueOf(days));
-                params.put(KEY_USERID, userId);
-                return params;
-            }
-
-        };
-
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
-    private void prepareCompletedActivityAPICall() {
-
-        progressDialog.setMessage("Please wait...");
-        progressDialog.show();
-
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofdate.php",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-
-                        progressDialog.dismiss();
-
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(s);
-
-                            int successCode = jsonObject.getInt("success");
-
-                            if (successCode == 1)
-                            {
-                                if (jsonObject.has("activity_number")) {
-                                    JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
-                                    completedCount = jsonArray.getInt(0);
-                                }
-                                else
-                                {
-                                    String message = jsonObject.getString("message");
-                                    completedCount = 0;
-                                }
-                            }
-
-
-//                            sendNotification(completedCount);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-
-                        progressDialog.dismiss();
-                    }
-                })
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(KEY_USERID, userId);
-                params.put(KEY_DATE, string_date);
-
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
 
     private void sendNotification() {
 

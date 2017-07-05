@@ -35,5 +35,7 @@ public class Config {
     public static final String _MONTH = "month";
     public static final String _YEAR = "year";
 
+    public static final String DIALOG_POSITION = "dialog_pos";
+
 
 }
