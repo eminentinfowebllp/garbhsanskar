@@ -122,9 +122,13 @@ public class DescriptionActivity extends AppCompatActivity {
             activity_title = intent.getStringExtra("activity_title");
             webView.getSettings().setJavaScriptEnabled(true);
             webView.loadData(webviewContent, "text/html", "UTF-8");
-            System.out.println("imageAct "+activity_image);
             initialProgressdialog.dismiss();
 
+        }
+
+        if (user_id.isEmpty())
+        {
+            buttonComplete.setVisibility(View.INVISIBLE);
         }
 
         if (activity_title!=null)
@@ -274,7 +278,6 @@ public class DescriptionActivity extends AppCompatActivity {
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params = new HashMap<String, String>();
-                System.out.println("activityId "+activity_id);
                 params.put(KEY_USERID,user_id);
                 params.put(KEY_ACTIVITYID,activity_id);
                 return params;

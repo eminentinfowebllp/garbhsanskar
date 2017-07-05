@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 
 import com.example.eminent.myapplication.Activity.HomeActivity;
+import com.example.eminent.myapplication.Activity.LoginActivity;
 import com.example.eminent.myapplication.R;
 
 import static java.lang.Thread.sleep;
@@ -23,7 +24,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 try {
                     sleep(2000);
-                    Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     (SplashScreen.this).overridePendingTransition(R.anim.translate_right_to_left, R.anim.stable);

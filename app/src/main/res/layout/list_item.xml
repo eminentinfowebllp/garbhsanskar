@@ -30,11 +30,13 @@
 
                 <com.mikhaellopez.circularimageview.CircularImageView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    card_view:civ_border="false"
                     android:layout_weight="0.2"
                     android:id="@+id/imageLogo"
-                    android:src="@mipmap/ic_launcher"
-                    />
+                    android:src="@mipmap/ic_launcher"/>
+
                 <!--<ImageView-->
                     <!--android:id="@+id/imageLogo"-->
                     <!--android:layout_width="0dp"-->

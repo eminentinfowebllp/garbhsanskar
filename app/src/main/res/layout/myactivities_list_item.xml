@@ -91,11 +91,12 @@
                 android:id="@+id/arc_progress"
                 android:layout_centerInParent="true"
                 android:layout_width="0dp"
-                android:layout_weight="0.2"
-                android:layout_height="wrap_content"
+                android:layout_weight="0.15"
+                android:layout_height="50dp"
                 custom:arc_max="100"
                 app:arc_stroke_width="1dp"
                 custom:arc_text_size="20sp"
+                custom:arc_suffix_text_padding="0dp"
                 android:layout_gravity="center_vertical"
                 custom:arc_text_color="@color/colorPrimary"
                 custom:arc_unfinished_color="@android:color/darker_gray"
@@ -105,6 +106,7 @@
             <TextView
                 android:id="@+id/textvw_scorePercentage"
                 android:layout_width="0dp"
+                android:layout_weight="0.5"
                 android:gravity="center"
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content" />

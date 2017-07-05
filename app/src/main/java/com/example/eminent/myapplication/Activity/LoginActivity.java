@@ -25,9 +25,16 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.eminent.myapplication.Model.ApiResponse;
+import com.example.eminent.myapplication.Model.Common;
 import com.example.eminent.myapplication.Model.Config;
 import com.example.eminent.myapplication.Model.SessionManager;
 import com.example.eminent.myapplication.R;
@@ -35,12 +42,17 @@ import com.example.eminent.myapplication.Retrofit.APIService;
 import com.example.eminent.myapplication.Retrofit.ApiClient;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import retrofit2.Call;
@@ -55,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private String id = "1234";
     private String string_date;
-
+    private TextView forgotIDTv;
     private int currentNotificationID = 0;
     private NotificationManager notificationManager;
     private NotificationCompat.Builder notificationBuilder;
@@ -67,6 +79,9 @@ public class LoginActivity extends AppCompatActivity {
     private  SharedPreferences.Editor editor;
 
     private ProgressDialog progressDialog;
+    private String freeDemoday;
+
+    private int count;
 
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -84,6 +99,13 @@ public class LoginActivity extends AppCompatActivity {
 
         session = new SessionManager(getApplicationContext());
 
+        if (session.checkLogin()) {
+
+            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         sharedPreferences = LoginActivity.this.getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -92,7 +114,30 @@ public class LoginActivity extends AppCompatActivity {
         joinnowButton = (Button) findViewById(R.id.joinnowButton);
         freeDemoButton = (Button) findViewById(R.id.demoButton);
         edittextId = (EditText) findViewById(R.id.codeEdittext);
+        forgotIDTv = (TextView) findViewById(R.id.forgotIdTv);
 
+
+        forgotIDTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new AlertDialog.Builder(LoginActivity.this )
+                        .setTitle((Html.fromHtml("<font color='#f44336'>Forogt unique ID</font>")))
+                        .setMessage("Contact admin for your id")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+
+            }
+        });
         joinnowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -103,7 +148,15 @@ public class LoginActivity extends AppCompatActivity {
         freeDemoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                oncelogin();
+
+                if (!isConnectd(LoginActivity.this))
+                {
+                    displayAlert();
+                }else
+                {
+                    oncelogin();
+                }
+
             }
         });
 
@@ -118,10 +171,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         toolbar.setNavigationIcon(R.drawable.ic_back);
-    }
-
-    private void oncelogin() {
-
     }
 
     private void login() {
@@ -161,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 int success = response.body().getSuccess();
                 progressDialog.dismiss();
+
                 if (success == 1) {
                     //successfull
                     String message = response.body().getMessage();
@@ -209,8 +259,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 progressDialog.dismiss();
 
-                System.out.println("callapi " + call);
-                System.out.println("throwble " + t);
             }
         });
 
@@ -240,11 +288,11 @@ public class LoginActivity extends AppCompatActivity {
                         setDataForSimpleNotification();
 
                         Intent navigateIntent = new Intent(getApplicationContext(),HomeActivity.class);
+                        navigateIntent.putExtra("action","joinnow");
                         startActivity(navigateIntent);
                         finish();
 
                         Toast.makeText(LoginActivity.this, "Welcome to Garbhsanskar", Toast.LENGTH_SHORT).show();
-                        System.out.println("numpick "+numberPicker.getValue());
                         editor.putString(Config.PREGNANCY_DAY, String.valueOf(numberPicker.getValue())).apply();
 
                         Date theDate = new Date();
@@ -255,9 +303,7 @@ public class LoginActivity extends AppCompatActivity {
                         String day = String.valueOf(myCal.get(Calendar.DAY_OF_MONTH));
                         String month = String.valueOf(myCal.get(Calendar.MONTH));
                         String year = String.valueOf(myCal.get(Calendar.YEAR));
-                        System.out.println("Day: " + day);
-                        System.out.println("Month: " + month);
-                        System.out.println("Year: " + year);
+
 
                         editor.putString(Config._DAY, day).apply();
                         editor.putString(Config._MONTH, month).apply();
@@ -342,11 +388,10 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-
     public void displayAlert() {
 
         new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
-                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
+                .setTitle((Html.fromHtml("<font color='#f44336'>Internet Connection Error</font>")))
                 .setCancelable(true)
                 .setNeutralButton("Ok",
                         new DialogInterface.OnClickListener() {
@@ -357,5 +402,39 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void oncelogin() {
 
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Common.BASE_URL + "API/getdemodaynumber.php",
+
+                new com.android.volley.Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String s) {
+
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(s);
+
+                            freeDemoday = jsonObject.getString("day");
+                            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+                            intent.putExtra("freeDemoDay", freeDemoday);
+                            startActivity(intent);
+                            finish();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                    }
+
+                    }
+                }, new com.android.volley.Response.ErrorListener() {
+
+                   @Override
+                   public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 }

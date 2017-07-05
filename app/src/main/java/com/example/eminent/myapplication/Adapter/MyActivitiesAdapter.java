@@ -66,7 +66,6 @@ public class MyActivitiesAdapter extends RecyclerView.Adapter<MyActivitiesAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView activityName, activityAvg;
-//                , activityPercentage;
         private ArcProgress arcProgress;
         private ProgressBar progressBar;
 

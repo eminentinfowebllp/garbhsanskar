@@ -74,7 +74,6 @@ public class DetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         days = intent.getIntExtra("days",0);
-        System.out.println("days  "+days);
         recyclerView = (RecyclerView) findViewById(R.id.recyvlerview);
         textViewStatus = (TextView) findViewById(R.id.txtStatus);
 
@@ -86,11 +85,11 @@ public class DetailsActivity extends AppCompatActivity {
         String userId = sharedPreferences.getString(Config.USER_ID, "");
 
 
-            if (!userId.isEmpty()) {
+//            if (!userId.isEmpty()) {
                 getActivityfromAPI(prgnancyDay, userId);
-                System.out.println("pregnancy_day "+days);
 
-        }
+
+//        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -131,7 +130,7 @@ public class DetailsActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         progressDialog.dismiss();
                         String imageArray = null;
-                        System.out.println("ActivityResponse " + response);
+
                         try {
                             JSONObject rootObject = new JSONObject(response);
                             int successCode = rootObject.getInt("success");
@@ -189,7 +188,7 @@ public class DetailsActivity extends AppCompatActivity {
                             }
 
                         } catch (JSONException e) {
-                            System.out.println("ExceptionError " + e.getMessage());
+
                             e.printStackTrace();
                         }
                     }
@@ -199,7 +198,7 @@ public class DetailsActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
                         Log.d("Volley_Error", error.toString());
-                        System.out.println("Volley_Error " + error.toString());
+
                     }
                 })
         {
@@ -207,7 +206,7 @@ public class DetailsActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                System.out.println("sendingDay "+String.valueOf(days));
+
                 params.put(KEY_DAY, String.valueOf(days));
                 params.put(KEY_USERID, userId);
                 return params;

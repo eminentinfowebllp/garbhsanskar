@@ -15,21 +15,27 @@
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreen.SplashScreen">
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
         <activity android:name=".Activity.LoginActivity" />
         <activity android:name=".Activity.HomeActivity" />
+
         <activity
             android:name=".Activity.DetailsActivity"
             android:banner="@drawable/ic_logo"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".Activity.DescriptionActivity"
             android:label="@string/title_activity_description"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".Activity.VideoActivity"
             android:screenOrientation="landscape" />
@@ -43,7 +49,6 @@
         </receiver>
 
         <service android:name=".Model.CheckRecentRun" />
-
 
         <service android:name=".Model.DailyNotification" />
 

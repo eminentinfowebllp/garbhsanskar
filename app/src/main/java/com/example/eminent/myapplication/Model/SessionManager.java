@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.example.eminent.myapplication.Activity.HomeActivity;
 import com.example.eminent.myapplication.Activity.LoginActivity;
 
 import java.util.HashMap;
@@ -60,9 +61,9 @@ public class SessionManager  {
 
     public boolean checkLogin(){
         // Check login status
-        if(!this.isLoggedIn()){
-            // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, LoginActivity.class);
+        if(this.isLoggedIn()){
+           /* // user is not logged in redirect him to Login Activity
+            Intent i = new Intent(_context, HomeActivity.class);
             // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -70,10 +71,16 @@ public class SessionManager  {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             // Staring Login Activity
-            _context.startActivity(i);
+            _context.startActivity(i);*/
+//            ((Activity)_context).finish();
+            return true;
+        }
+        else
+        {
+            return false;
         }
 
-        return false;
+
     }
 
     public HashMap<String, String> getUserDetails(){
@@ -105,7 +112,7 @@ public class SessionManager  {
 
         // Staring Login Activity
         _context.startActivity(i);
-//        ((Activity)_context).finish();
+//        ((Activity)(_context)).finish();
 
     }
 

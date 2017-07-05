@@ -73,10 +73,7 @@
                         android:id="@+id/headerImgll">
 
                         <TextView
-
-
                             android:id="@+id/homePageTitle"
-
                             style="@style/TextAppearance.AppCompat.Headline"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -86,10 +83,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-
-
                             android:id="@+id/homePageTagline"
-
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -193,7 +187,8 @@
                             android:text="@string/day_before_nyesterday"
                             android:textColor="@color/colorPrimaryDark"
                             android:textStyle="bold"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            />
 
                     </LinearLayout>
 

@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -73,6 +74,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView homepage_image;
     private long days;
     private int total_pregnecydays;
+    private String freeDemoDays;
 
     private final static String TAG = "MainActivity";
     public final static String PREFS = "PrefsFile";
@@ -111,6 +113,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+
+        sessionManager = new SessionManager(getApplicationContext());
+
         homepage_title = (TextView) findViewById(R.id.homePageTitle);
         homepage_tagline = (TextView) findViewById(R.id.homePageTagline);
         homepage_desc = (TextView) findViewById(R.id.homePageDescription);
@@ -127,12 +132,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userEditor = sharedPreferences.edit();
 
-        sessionManager = new SessionManager(getApplicationContext());
-        if (sessionManager.checkLogin())
-            finish();
-
         userId = sharedPreferences.getString(Config.USER_ID, "");
 
+        if (userId.isEmpty())
+        {
+            buttonYesterday.setEnabled(false);
+            buttonDaybfrystrday.setEnabled(false);
+        }
 //        ------------------------------ Daily Notification ---------------------------
 
         progressDialog = new ProgressDialog(HomeActivity.this);
@@ -140,7 +146,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         string_date = dateFormat.format(date);
-        System.out.println("Date " + string_date);
 
 
 //        prepareCompletedActivityAPICall();
@@ -170,7 +175,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //        System.out.println("intervaltime "+AlarmManager.INTERVAL_DAY);
 //        System.out.println("time "+calendar.getTimeInMillis());
 
-       //  ------------------------- 3 day notification ------------------------------
+        //  ------------------------- 3 day notification ------------------------------
 
 
         settings = getSharedPreferences(PREFS, MODE_PRIVATE);
@@ -183,7 +188,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             recordRunTime();
 
         Log.v(TAG, "Starting CheckRecentRun service...");
-        startService(new Intent(this,  CheckRecentRun.class));
+        startService(new Intent(this, CheckRecentRun.class));
 
         // ------------------------------------------------------------------------------------ //
 
@@ -198,27 +203,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         textViewProfile = (TextView) view.findViewById(R.id.txtViewprofile);
 
-        textViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent viewprofileIntent = new Intent(getApplicationContext(),ViewprofileActivity.class);
-                startActivity(viewprofileIntent);
-            }
-        });
+        if (!userId.isEmpty()) {
+            textViewProfile.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Intent viewprofileIntent = new Intent(getApplicationContext(), ViewprofileActivity.class);
+                    startActivity(viewprofileIntent);
+                }
+            });
+        } else
+            {
+            textViewProfile.setVisibility(View.INVISIBLE);
+        }
+
 
         textViewUsername = (TextView) view.findViewById(R.id.txtUsername);
-        String username = sharedPreferences.getString(Config.NAME,"");
-        System.out.println("Uname "+username);
+        String username = sharedPreferences.getString(Config.NAME, "");
         textViewUsername.setText(username);
 
         nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-                        selectDrawerItem(menuItem);
-                        return true;
-                    }
-                });
+                selectDrawerItem(menuItem);
+                return true;
+            }
+        });
 
         drawerToggle = setupDrawerToggle();
 
@@ -229,7 +240,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setTitle("");
 
         // add back arrow to toolbar
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -238,81 +249,89 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         textViewDays = (TextView) findViewById(R.id.dayTv);
 
-        if (sessionManager.isLoggedIn())
-        {
-//            sendNotification();
+        if (sessionManager.isLoggedIn()) {
+
 
             homeTitle = sharedPreferences.getString(Config.HOMEPAGE_TITLE, "");
             homeTagline = sharedPreferences.getString(Config.HOMEPAGE_TAGLINE, "");
             homeDesc = sharedPreferences.getString(Config.HOMEPAGE_DESC, "");
             homeImage = sharedPreferences.getString(Config.HOMEPAGE_IMAGE, "");
 
-            thatDay_pregnency_days = sharedPreferences.getString(Config.PREGNANCY_DAY,"");
-            System.out.println("pregVal "+ thatDay_pregnency_days);
+            thatDay_pregnency_days = sharedPreferences.getString(Config.PREGNANCY_DAY, "");
 
-            String day = sharedPreferences.getString(Config._DAY, "");
-            String month = sharedPreferences.getString(Config._MONTH, "");
-            String year = sharedPreferences.getString(Config._YEAR, "");
 
-            Calendar thatDay = Calendar.getInstance();
-            thatDay.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-            thatDay.set(Calendar.MONTH, Integer.parseInt(month)); // 0-11 so 1 less
-            thatDay.set(Calendar.YEAR, Integer.parseInt(year));
+            if (!thatDay_pregnency_days.isEmpty()) {
+                String day = sharedPreferences.getString(Config._DAY, "");
+                String month = sharedPreferences.getString(Config._MONTH, "");
+                String year = sharedPreferences.getString(Config._YEAR, "");
+
+                Calendar thatDay = Calendar.getInstance();
+                thatDay.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+                thatDay.set(Calendar.MONTH, Integer.parseInt(month)); // 0-11 so 1 less
+                thatDay.set(Calendar.YEAR, Integer.parseInt(year));
 //
-            Calendar today = Calendar.getInstance();
+                Calendar today = Calendar.getInstance();
 //
-            long diff = today.getTimeInMillis() - thatDay.getTimeInMillis();
-            System.out.println("todayD "+today.getTimeInMillis());
+                long diff = today.getTimeInMillis() - thatDay.getTimeInMillis();
 
-            days = diff / (24 * 60 * 60 * 1000);
-            System.out.println("diffDays "+days);
+                days = diff / (24 * 60 * 60 * 1000);
 
-            total_pregnecydays = Integer.parseInt(thatDay_pregnency_days) + (int) days;
-            textViewDays.setText("Day " + total_pregnecydays);
+                total_pregnecydays = Integer.parseInt(thatDay_pregnency_days) + (int) days;
+                textViewDays.setText("Day " + total_pregnecydays);
 
-            userEditor.putString(Config.ACTUAL_DAY, String.valueOf(total_pregnecydays)).apply();
+                        if (!homeTitle.isEmpty()) {
+                            homepage_title.setText(homeTitle);
+                        }
+                        else {
+                            homepage_title.setText("Welcome to GarbhSanskar");
+                        }
 
-            if (homeTitle!=null)
-            {
-                homepage_title.setText(homeTitle);
-            }else
-            {
-                homepage_title.setText("Welcome to GarbhSanskar");
+                         if (!homeTagline.isEmpty()) {
+                             homepage_tagline.setText(homeTagline);
+                         } else {
+                             homepage_tagline.setText("You are going to like us");
+                         }
+
+                      if (!homeDesc.isEmpty()) {
+                          homepage_desc.setText(homeDesc);
+                      } else {
+                          homepage_desc.setText("The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.");
+                      }
+
+                         if (!homeImage.isEmpty()) {
+                             Glide.with(this).load(homeImage)
+                                     .thumbnail(0.5f)
+                                     .crossFade()
+                                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                     .into(homepage_image);
+
+                         } else
+                              {
+                                  homepage_image.setBackgroundResource(R.drawable.bottomback);
+
+                              }
+
+
             }
 
-            if (homeTagline!=null)
-            {
-                homepage_tagline.setText(homeTagline);
-            }else
-            {
-                homepage_tagline.setText("You are going to like us");
-            }
 
-            if (homeDesc!=null)
-            {
-                homepage_desc.setText(homeDesc);
-            }else
-            {
-                homepage_desc.setText("The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.");
-            }
+        } else {
 
-            if (homeImage!=null)
-            {
-                Glide.with(this).load(homeImage)
-                        .thumbnail(0.5f)
-                        .crossFade()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(homepage_image);
-            }else
-            {
-                homepage_image.setBackgroundResource(R.drawable.bottomback);
-            }
+            Intent intent_ = getIntent();
+            freeDemoDays = intent_.getStringExtra("freeDemoDay");
+            textViewDays.setText("Day " + freeDemoDays);
 
+            homepage_title.setText("Welcome to GarbhSanskar");
+            homepage_tagline.setText("You are going to like us");
+            homepage_desc.setText("The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.The Sanskrit word Garbh means foetus in the womb and Sanskar means educating the mind. So, Garbh sanskar essentially means educating the mind of the foetus. It is traditionally believed that a child\\'s mental and behavioural development starts as soon as he is conceived. His personality begins to take shape in the womb, and this can be influenced by the mother\\'s state of mind during pregnancy. This knowledge can be traced back to ancient scriptures and is included in the Ayurveda.");
+            homepage_image.setBackgroundResource(R.drawable.bottomback);
 
         }
 
-    }
+        userEditor.putString(Config.ACTUAL_DAY, String.valueOf(total_pregnecydays)).apply();
+        sendNotification();
 
+    }
 
     private void recordRunTime() {
         editor.putLong("lastRun", System.currentTimeMillis());
@@ -351,8 +370,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 }else
                 {
-                    Intent intent = new Intent(getApplicationContext(), MyActivities.class);
-                    startActivity(intent);
+                    if (userId.isEmpty())
+                    {
+                        Toast.makeText(this, "Register with us", Toast.LENGTH_SHORT).show();
+                    }else
+                    {
+                        Intent intent = new Intent(getApplicationContext(), MyActivities.class);
+                        startActivity(intent);
+
+                    }
 
                 }
                 break;
@@ -365,11 +391,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 }else
                 {
-                    Intent intent1 = new Intent(getApplicationContext(), MyScore.class);
-                    startActivity(intent1);
+                    if (userId.isEmpty())
+                    {
+                        Toast.makeText(this, "Register with us", Toast.LENGTH_SHORT).show();
+
+                    }else
+                    {
+                        Intent intent1 = new Intent(getApplicationContext(), MyScore.class);
+                        startActivity(intent1);
+                    }
+
                 }
-
-
                 break;
 
             case R.id.sub_item_1:
@@ -380,6 +412,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     displayAlert();
 
+                }else if (userId.isEmpty())
+                {
+                    Toast.makeText(this, "Register with us", Toast.LENGTH_SHORT).show();
                 }else
                 {
                     //languageAPICall(pos);
@@ -421,12 +456,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent setIntent = new Intent(Intent.ACTION_MAIN);
-        setIntent.addCategory(Intent.CATEGORY_HOME);
-        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(setIntent);
-        finish();
 
+                Intent setIntent = new Intent(Intent.ACTION_MAIN);
+                setIntent.addCategory(Intent.CATEGORY_HOME);
+                setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(setIntent);
+                finish();
     }
 
     public void showdialog(){
@@ -446,9 +481,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         {
                             displayAlert();
 
+                        }else if (userId.isEmpty())
+                        {
+                            Toast.makeText(HomeActivity.this, "Register with us", Toast.LENGTH_SHORT).show();
+                            //languageAPICall(pos);
                         }else
                         {
-                            //languageAPICall(pos);
+
                         }
 //                        Toast.makeText(HomeActivity.this, "position : " + String.valueOf(pos) +
 //                                        " value = " + text,
@@ -469,26 +508,44 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          else if(viewAction == buttonToday)
         {
             Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", total_pregnecydays);
+            if (userId.isEmpty())
+            {
+                intent.putExtra("days", Integer.parseInt(freeDemoDays));
+            }else
+            {
+                intent.putExtra("days", total_pregnecydays);
+            }
             startActivity(intent);
 
-            System.out.println("days_ "+ total_pregnecydays);
+
         }
+
         else if (viewAction == buttonYesterday)
         {
-            Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", total_pregnecydays-1);
-            startActivity(intent);
+            if (userId.isEmpty())
+            {
+                Toast.makeText(this, "Register with us", Toast.LENGTH_SHORT).show();
+            }else
+            {
+                Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
+                intent.putExtra("days", total_pregnecydays-1);
+                startActivity(intent);
+            }
 
-            System.out.println("days_ "+ thatDay_pregnency_days);
         }
         else if (viewAction == buttonDaybfrystrday)
         {
-            Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
-            intent.putExtra("days", total_pregnecydays-2);
-            startActivity(intent);
+            if (userId.isEmpty())
+            {
+                Toast.makeText(this, "Register with us", Toast.LENGTH_SHORT).show();
 
-            System.out.println("days_ "+ thatDay_pregnency_days);
+            }else {
+                Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
+                intent.putExtra("days", total_pregnecydays-2);
+                startActivity(intent);
+            }
+
+
         }
     }
 
@@ -502,7 +559,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         String imageArray = null;
                         String activity_desc = null;
 
-                        System.out.println("ActivityResponse " + s);
 
                         try {
                             JSONObject rootObject = new JSONObject(s);
@@ -566,7 +622,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                         } catch (JSONException e) {
-                            System.out.println("ExceptionError " + e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -576,14 +631,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
                         Log.d("Volley_Error", error.toString());
-                        System.out.println("Volley_Error " + error.toString());
                     }
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
-                System.out.println("sendingDay "+String.valueOf(days));
                 params.put(KEY_DAY, String.valueOf(days));
                 params.put(KEY_USERID, userId);
                 return params;
@@ -623,24 +676,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 if (jsonObject.has("activity_number")) {
                                     JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
                                     completedCount = jsonArray.getInt(0);
-                                    System.out.println("completed_count1 "+completedCount);
                                 }
                                 else
                                 {
                                     String message = jsonObject.getString("message");
-                                    System.out.println("arrayData "+message);
                                     completedCount = 0;
-                                    System.out.println("completed_count2 "+completedCount);
                                 }
                             }
 
 
 //                            sendNotification(completedCount);
-                            System.out.println("completed_count3 "+completedCount);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            System.out.println("errorMess "+ e.getMessage());
                         }
 
                     }
@@ -652,7 +700,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     public void onErrorResponse(VolleyError volleyError) {
 
                         progressDialog.dismiss();
-                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
                     }
                 })
         {
@@ -673,16 +720,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendNotification() {
 
-        SharedPreferences dailynoti = getSharedPreferences(PREFS, MODE_PRIVATE);
-        editor = dailynoti.edit();
+//        SharedPreferences dailynoti = getSharedPreferences(PREFS, MODE_PRIVATE);
+//        editor = dailynoti.edit();
+//
+//        // First time running app?
+//        if (!dailynoti.contains("lastRun"))
+//            enableNotification(null);
+//        else
+//            recordRunTime();
+//
+//        Log.v(TAG, "Starting CheckRecentRun service...");
 
-        // First time running app?
-        if (!dailynoti.contains("lastRun"))
-            enableNotification(null);
-        else
-            recordRunTime();
 
-        Log.v(TAG, "Starting CheckRecentRun service...");
+
+        if (!userId.isEmpty())
         startService(new Intent(this,  DailyNotification.class));
 
 //        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -730,6 +781,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         })
                 .show();
     }
+
+
 
 
 }

@@ -37,8 +37,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         this.activityModelList=activityModelList;
     }
 
-
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent,false);
@@ -53,9 +51,10 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
         if(model.getActivity_completed().equalsIgnoreCase("1"))
         {
-            holder.imageView.setVisibility(View.VISIBLE);
-            holder.imageView.setImageResource(R.mipmap.ic_completed);
-            holder.linearLayout.setAlpha(0.5f);
+//            holder.imageView.setVisibility(View.VISIBLE);
+//            holder.imageView.setImageResource(R.mipmap.ic_completed);
+//            holder.linearLayout.setAlpha(0.5f);
+            holder.linearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.colorlist));
         }
         holder.title.setText(model.getActivity_title());
     }
@@ -73,6 +72,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
+
             title = (TextView) itemView.findViewById(R.id.titleTxt);
             imageView = (ImageView) itemView.findViewById(R.id.imageComplete);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.completedLl);

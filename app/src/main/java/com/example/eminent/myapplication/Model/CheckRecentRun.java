@@ -40,7 +40,8 @@ public class CheckRecentRun extends Service {
             if (settings.getLong("lastRun", Long.MAX_VALUE) < System.currentTimeMillis() - delay)
                 sendNotification();
 
-        } else {
+        } else
+            {
             Log.i(TAG, "Notifications are disabled");
         }
 
@@ -66,12 +67,13 @@ public class CheckRecentRun extends Service {
     public void sendNotification() {
 
         Intent mainIntent = new Intent(this, HomeActivity.class);
+
         @SuppressWarnings("deprecation")
         Notification noti = new Notification.Builder(this)
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(this, 131314, mainIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT))
-                .setContentTitle("Its been long!")
+                .setContentTitle("Garbhsanskar!")
                 .setContentText("Your activities are pending.")
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSmallIcon(R.mipmap.ic_launcher)

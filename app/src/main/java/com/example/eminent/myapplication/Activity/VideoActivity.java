@@ -32,7 +32,6 @@ public class VideoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         VideoUrl = intent.getStringExtra("activity_video");
 
-        System.out.println("VidURL "+VideoUrl);
 
         final VideoView videoview = (VideoView) findViewById(R.id.vView);
 

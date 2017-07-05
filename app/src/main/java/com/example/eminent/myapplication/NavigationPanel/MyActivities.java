@@ -36,6 +36,7 @@ import com.example.eminent.myapplication.Model.MyActivitiesModel;
 import com.example.eminent.myapplication.R;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -100,7 +101,6 @@ public class MyActivities extends AppCompatActivity {
 
         activityModelList = new ArrayList<>();
 
-        prepareAPICall();
         if (!isConnectd(this)) {
             displayAlert();
         }
@@ -109,11 +109,7 @@ public class MyActivities extends AppCompatActivity {
             prepareAPICall();
         }
 
-//        prepareActivityData();
-        activityAdapter = new MyActivitiesAdapter(this,activityModelList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(MyActivities.this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(activityAdapter);
+
     }
 
     private void prepareAPICall() {
@@ -129,34 +125,38 @@ public class MyActivities extends AppCompatActivity {
                         System.out.println("scoreResponse " + s);
 
                         try {
+
                             JSONObject jsonRootObject = new JSONObject(s);
 
                             int successCode = jsonRootObject.getInt("success");
 
                             if (successCode == 1)
                             {
-                                JSONObject activity = jsonRootObject.getJSONObject("activity");
+                                JSONArray activity = jsonRootObject.getJSONArray("activity");
 
-                                for (int i = 1; i<=activity.length(); i++)
+                                for (int i = 0; i<activity.length(); i++)
                                 {
-                                    JSONObject jsonObject_activity1 = activity.getJSONObject(String.valueOf(i));
-                                    System.out.println("jsonObject "+jsonObject_activity1);
+
+                                    JSONObject jsonObject_activity1 = activity.getJSONObject(i);
+
+                                    String activity_number = jsonObject_activity1.getString("activity_number");
                                     String completed_activity = jsonObject_activity1.getString("completed");
                                     String total_activity = jsonObject_activity1.getString("total");
-                                    System.out.println("completed_activity "+completed_activity);
-                                    System.out.println("total_activity "+total_activity);
+
 
                                     MyActivitiesModel model = new MyActivitiesModel();
                                     model.setCompleted_activities(completed_activity);
                                     model.setTotal_activities(total_activity);
-                                    model.setActivities(String.valueOf(i));
+                                    model.setActivities(activity_number);
 
                                     activityModelList.add(model);
-                                    activityAdapter = new MyActivitiesAdapter(MyActivities.this, activityModelList);
-                                    recyclerView.setAdapter(activityAdapter);
-                                    activityAdapter.notifyDataSetChanged();
+
                                 }
 
+                                activityAdapter = new MyActivitiesAdapter(MyActivities.this, activityModelList);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(MyActivities.this));
+                                recyclerView.setAdapter(activityAdapter);
+                                activityAdapter.notifyDataSetChanged();
                             }
 
                         } catch (JSONException e) {
@@ -186,13 +186,14 @@ public class MyActivities extends AppCompatActivity {
         };
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
+                30000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+
 
     public void displayAlert() {
 
@@ -207,7 +208,5 @@ public class MyActivities extends AppCompatActivity {
                         })
                 .show();
     }
-
-
 
 }

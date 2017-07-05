@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,13 +46,13 @@ public class DailyNotification extends Service {
 
     private int completedCount;
     private String userId;
-    private String string_date;
+    private String pregnancy_day;
 
     private SharedPreferences sharedPreferences;
     SharedPreferences.Editor userEditor;
 
     private static final String KEY_USERID = "user_id";
-    private static final String KEY_DATE = "date";
+    private static final String KEY_DAY = "day";
 
     private SessionManager sessionManager;
 
@@ -58,34 +60,32 @@ public class DailyNotification extends Service {
     public void onCreate() {
         super.onCreate();
 
+
         sessionManager = new SessionManager(getApplicationContext());
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userEditor = sharedPreferences.edit();
         userId = sharedPreferences.getString(Config.USER_ID, "");
-
+        pregnancy_day = sharedPreferences.getString(Config.ACTUAL_DAY, "");
         SharedPreferences settings = getSharedPreferences(HomeActivity.PREFS, MODE_PRIVATE);
 
-        // Are notifications enabled?
-        if (settings.getBoolean("enabled", true)) {
-            // Is it time for a notification?
-            if (settings.getLong("lastRun", Long.MAX_VALUE) < System.currentTimeMillis() - delay);
+//        // Are notifications enabled?
+//        if (settings.getBoolean("enabled", true)) {
+//            // Is it time for a notification?
+//            if (settings.getLong("lastRun", Long.MAX_VALUE) < System.currentTimeMillis() - delay) ;
+//            {
+                if (!userId.isEmpty()) {
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date();
-            string_date = dateFormat.format(date);
-            System.out.println("Date " + string_date);
+                    prepareAPICall(userId, pregnancy_day);
+                    Toast.makeText(this, "hi", Toast.LENGTH_SHORT).show();
+                } else {
 
-                prepareAPICall(userId,string_date);
+                    Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
 
-        } else {
-            Log.i(TAG, "Notifications are disabled");
-        }
+                    Log.i(TAG, "Notifications are disabled");
+                }
 
-        // Set an alarm for the next time this service should run:
-        setAlarm();
+                stopSelf();
 
-        Log.v(TAG, "Service stopped");
-        stopSelf();
     }
 
 
@@ -95,10 +95,10 @@ public class DailyNotification extends Service {
         @SuppressWarnings("deprecation")
         Notification noti = new Notification.Builder(this)
                 .setAutoCancel(true)
-                .setContentIntent(PendingIntent.getActivity(this, 131314, mainIntent,
+                .setContentIntent(PendingIntent.getActivity(this, 1, mainIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT))
                 .setContentTitle("Garbh Sanskar")
-                .setContentText(completedCount + "Activities Completed")
+                .setContentText(completedCount + " "+"Activities Completed")
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Daily Reminder!")
@@ -107,20 +107,38 @@ public class DailyNotification extends Service {
 
         NotificationManager notificationManager
                 = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(131315, noti);
+        notificationManager.notify(1, noti);
 
         Log.v(TAG, "Notification sent");
     }
 
-    public void setAlarm() {
+    public void setAlarm(int completedCount) {
 
-        Intent serviceIntent = new Intent(this, DailyNotification.class);
-        PendingIntent pi = PendingIntent.getService(this, 131312, serviceIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        userEditor.remove(Config.DAILY_NOTI_COUNT);
+        userEditor.apply();
 
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + delay, pi);
-        Log.v(TAG, "Alarm set");
+        userEditor.putString(Config.DAILY_NOTI_COUNT, String.valueOf(completedCount)).apply();
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+
+        int ID = (int) System.currentTimeMillis();
+        alarmIntent.putExtra("ID",ID);
+        Log.d("setRepeatedNotification", "ID:" + ID);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        calendar.set(Calendar.HOUR, 23);
+        calendar.set(Calendar.MINUTE, 45);
+        calendar.set(Calendar.SECOND, 0);
+
+        if(calendar.before(now)){
+            calendar.add(Calendar.DATE, 1);
+        }
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     @Override
@@ -130,11 +148,12 @@ public class DailyNotification extends Service {
 
     private void prepareAPICall(final String userId, final String string_date) {
 
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofdate.php",
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofday.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
 
+                        Toast.makeText(DailyNotification.this, "hello", Toast.LENGTH_SHORT).show();
 
                         try {
 
@@ -145,9 +164,11 @@ public class DailyNotification extends Service {
                             if (successCode == 1)
                             {
                                 if (jsonObject.has("activity_number")) {
+
                                     JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
-                                    completedCount = jsonArray.getInt(0);
+                                    completedCount = jsonArray.length();
                                     System.out.println("completed_count1 "+completedCount);
+                                    Toast.makeText(DailyNotification.this, "hello1", Toast.LENGTH_SHORT).show();
                                 }
                                 else
                                 {
@@ -155,11 +176,13 @@ public class DailyNotification extends Service {
                                     System.out.println("arrayData "+message);
                                     completedCount = 0;
                                     System.out.println("completed_count2 "+completedCount);
+                                    Toast.makeText(DailyNotification.this, "hello2", Toast.LENGTH_SHORT).show();
+
                                 }
                             }
 
-
-                            sendNotification(completedCount);
+                            setAlarm(completedCount);
+//                            sendNotification(completedCount);
                             System.out.println("completed_count3 "+completedCount);
 
                         } catch (JSONException e) {
@@ -175,15 +198,18 @@ public class DailyNotification extends Service {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
 
-//                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
+                        Toast.makeText(DailyNotification.this, "hello3", Toast.LENGTH_SHORT).show();
+                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
                     }
                 })
-        {
+
+             {
+
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(KEY_USERID, userId);
-                params.put(KEY_DATE, string_date);
+                params.put(KEY_DAY, string_date);
 
                 return params;
             }
