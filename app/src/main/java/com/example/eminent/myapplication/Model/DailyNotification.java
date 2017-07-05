@@ -60,19 +60,13 @@ public class DailyNotification extends Service {
     public void onCreate() {
         super.onCreate();
 
-
         sessionManager = new SessionManager(getApplicationContext());
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userEditor = sharedPreferences.edit();
         userId = sharedPreferences.getString(Config.USER_ID, "");
         pregnancy_day = sharedPreferences.getString(Config.ACTUAL_DAY, "");
-        SharedPreferences settings = getSharedPreferences(HomeActivity.PREFS, MODE_PRIVATE);
 
-//        // Are notifications enabled?
-//        if (settings.getBoolean("enabled", true)) {
-//            // Is it time for a notification?
-//            if (settings.getLong("lastRun", Long.MAX_VALUE) < System.currentTimeMillis() - delay) ;
-//            {
+
                 if (!userId.isEmpty()) {
 
                     prepareAPICall(userId, pregnancy_day);
