@@ -51,7 +51,7 @@ public class DailyNotification extends Service {
     private SharedPreferences sharedPreferences;
     SharedPreferences.Editor userEditor;
 
-    private static final String KEY_USERID = "user_id";
+      private static final String KEY_USERID = "user_id";
     private static final String KEY_DAY = "day";
 
     private SessionManager sessionManager;

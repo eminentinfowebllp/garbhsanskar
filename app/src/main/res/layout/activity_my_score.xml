@@ -146,9 +146,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp" />
 
-
-
-
         <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -160,10 +157,11 @@
             android:layout_width="280dp"
             android:layout_height="280dp"
             custom:arc_bottom_text="Score"
+                app:arc_suffix_text=""
             app:arc_text_size="60dp"
             app:arc_text_color="@color/colorPrimary"
             custom:arc_max="10"
-                app:arc_suffix_text=" "
+                app:arc_suffix_text_padding="15dp"
             app:arc_stroke_width="10dp"
             custom:arc_unfinished_color="@android:color/darker_gray"
             custom:arc_finished_color="@color/colorPrimary"

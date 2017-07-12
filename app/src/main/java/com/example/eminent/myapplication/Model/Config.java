@@ -10,8 +10,9 @@ public class Config {
 
     public static final String PREGNANCY_DATE = "date";
     public static final String PREGNANCY_DAY = "pregnancy_day";
-    public static final String PREGNANCY_MONTH = "month";
-    public static final String PREGNANCY_YEAR = "year";
+
+    public static final String SELECTED_DAY = "selected_day";
+    public static final String DAY_BEFORE_YESTERDAY = "day_before_yesterday";
     public static final String ACTUAL_DAY = "actual_day";
 
     public static final String USER_ID = "user_id";
@@ -35,7 +36,10 @@ public class Config {
     public static final String _MONTH = "month";
     public static final String _YEAR = "year";
 
-    public static final String DIALOG_POSITION = "dialog_pos";
+    public static final String LANGUAGE_DIALOG = "language";
+
+    public static final String LANGUAGE_SELECTION = "lang_selection";
+
 
 
 }

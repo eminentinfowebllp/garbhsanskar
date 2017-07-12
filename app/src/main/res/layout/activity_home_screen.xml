@@ -122,8 +122,10 @@
                             app:cub_color="@color/colorPrimary"
                             app:cub_hover_color="@color/colorPrimaryDark"
                             app:cub_riple_effect="true"
-                            />
-
+                            android:text=""
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:textSize="15dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -150,7 +152,12 @@
                             app:cub_border_radius="4dp"
                             app:cub_color="@color/colorPrimary"
                             app:cub_hover_color="@color/colorPrimaryDark"
-                            app:cub_riple_effect="true" />
+                            app:cub_riple_effect="true"
+                            android:textAlignment="center"
+                            android:text=""
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:textSize="15dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -159,8 +166,7 @@
                             android:text="Yesterday"
                             android:textStyle="bold"
                             android:textColor="@color/colorPrimaryDark"
-                            android:textSize="12sp"
-                            />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -178,7 +184,12 @@
                             app:cub_border_radius="4dp"
                             app:cub_color="@color/colorPrimary"
                             app:cub_hover_color="@color/colorPrimaryDark"
-                            app:cub_riple_effect="true" />
+                            app:cub_riple_effect="true"
+                            android:text=""
+                            android:textAlignment="center"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:textSize="15dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -187,8 +198,7 @@
                             android:text="@string/day_before_nyesterday"
                             android:textColor="@color/colorPrimaryDark"
                             android:textStyle="bold"
-                            android:textSize="12sp"
-                            />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -210,7 +220,6 @@
                         android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
-
                     <TextView
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="match_parent"
@@ -231,7 +240,6 @@
 
                     <TextView
                         android:id="@+id/homePageDescription"
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -242,64 +250,11 @@
 
             </LinearLayout>
 
+
         </ScrollView>
 
     </LinearLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="135dp"
-            android:layout_height="380dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:src="@mipmap/ic_reply_white_24dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="135dp"
-            android:layout_height="385dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|bottom"
-                android:src="@mipmap/ic_checked"/>
-                android:layout_gravity="bottom|center"
-                android:src="@drawable/ic_comment_text_black_24dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="385dp"
-            android:orientation="horizontal">
-
-        <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:src="@mipmap/ic_reply_white_24dp"/>
-
-        </LinearLayout>
-
-        </LinearLayout>
-
-    </FrameLayout>
 
 
         <!--<View-->
@@ -307,12 +262,10 @@
             <!--android:layout_height="320dp">-->
         <!--</View>-->
 
-
         <!--<TextView-->
             <!--android:id="@+id/imageView"-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"/>-->
-
 
 
     <android.support.design.widget.NavigationView

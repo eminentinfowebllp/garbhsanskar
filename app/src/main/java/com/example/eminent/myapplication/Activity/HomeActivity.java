@@ -24,14 +24,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cuboid.cuboidcirclebutton.CuboidButton;
-import com.eminayar.panter.DialogType;
-import com.eminayar.panter.PanterDialog;
-import com.eminayar.panter.interfaces.OnSingleCallbackConfirmListener;
-import com.example.eminent.myapplication.Model.AbstractClass;
-
 import com.example.eminent.myapplication.Model.CheckRecentRun;
 import com.example.eminent.myapplication.Model.Common;
 import com.example.eminent.myapplication.Model.Config;
@@ -41,10 +43,16 @@ import com.example.eminent.myapplication.NavigationPanel.MyActivities;
 import com.example.eminent.myapplication.NavigationPanel.MyScore;
 import com.example.eminent.myapplication.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -61,7 +69,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private long days;
     private int total_pregnecydays;
     private String freeDemoDays;
-    private int dialog_position;
 
     private final static String TAG = "MainActivity";
     public final static String PREFS = "PrefsFile";
@@ -89,7 +96,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressDialog progressDialog;
     private String thatDay_pregnency_days;
 
-    private AbstractClass abstractClass;
+    private int languagePosition = -1;
 
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -104,8 +111,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
-
-        abstractClass = new AbstractClass(getApplicationContext());
 
         sessionManager = new SessionManager(getApplicationContext());
 
@@ -125,6 +130,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userEditor = sharedPreferences.edit();
 
+        if(!sharedPreferences.getString(Config.LANGUAGE_SELECTION,"").isEmpty())
+        {
+            if(sharedPreferences.getString(Config.LANGUAGE_SELECTION,"").equalsIgnoreCase("English"))
+            {
+                languagePosition = 0;
+            }
+            else if(sharedPreferences.getString(Config.LANGUAGE_SELECTION,"").equalsIgnoreCase("Hindi"))
+            {
+                languagePosition = 1;
+            }
+            else if(sharedPreferences.getString(Config.LANGUAGE_SELECTION,"").equalsIgnoreCase("Gujarati"))
+            {
+                languagePosition = 2;
+            }
+        }
+
         userId = sharedPreferences.getString(Config.USER_ID, "");
 
         if (userId.isEmpty())
@@ -132,6 +153,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             buttonYesterday.setEnabled(false);
             buttonDaybfrystrday.setEnabled(false);
         }
+
 //        ------------------------------ Daily Notification ---------------------------
 
         progressDialog = new ProgressDialog(HomeActivity.this);
@@ -145,13 +167,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         if (!Dailysettings.contains("DailylastRun"))
         {
-            Toast.makeText(this, "daily 1", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "daily 1", Toast.LENGTH_SHORT).show();
             enableDailyNotification(null);
         }
         else
         {
             recordDailyRunTime();
-            Toast.makeText(this, "daily 2", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "daily 2", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -321,6 +343,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                               }
 
 
+                if (!userId.isEmpty())
+                {
+                    todayCompletedApiCall(total_pregnecydays);
+                    yesterdayCompletedApiCall(total_pregnecydays);
+                    dayBeforeYesterdayCompletedApiCall(total_pregnecydays);
+                }
+
             }
 
 
@@ -341,6 +370,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //        sendNotification();
 
     }
+
+
 
     private void recordDailyRunTime() {
         Dailyeditor.putLong("DailylastRun", System.currentTimeMillis());
@@ -398,6 +429,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     {
                         Intent intent = new Intent(getApplicationContext(), MyActivities.class);
                         startActivity(intent);
+
 
                     }
 
@@ -463,15 +495,74 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.langSelection:
-                showdialog();
+
+                if (!isConnectd(HomeActivity.this))
+                {
+                    displayAlert();
+
+                }else if (userId.isEmpty())
+                {
+                    Toast.makeText(this, "Register wth us", Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    dialog(languagePosition);
+                }
                 break;
+
             case android.R.id.home:
                 mDrawer.openDrawer(GravityCompat.START);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void dialog(int item) {
+
+        AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+        //alt_bld.setIcon(R.drawable.icon);
+        alt_bld.setTitle((Html.fromHtml("<font color='#f44336'>Select Language</font>")));
+        alt_bld.setSingleChoiceItems(R.array.dialog_choices, item, new DialogInterface
+                .OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+
+                if (!isConnectd(HomeActivity.this))
+                {
+                    displayAlert();
+
+                }else if (userId.isEmpty())
+                {
+                    Toast.makeText(HomeActivity.this, "Register with us", Toast.LENGTH_SHORT).show();
+                    //languageAPICall(pos);
+                }else
+                {
+                    if(item == 0)
+                    {
+                        languagePosition = item;
+                        userEditor.putString(Config.LANGUAGE_SELECTION,"English").apply();
+                    }
+                    else if(item == 1)
+                    {
+                        languagePosition = item;
+                        userEditor.putString(Config.LANGUAGE_SELECTION,"Hindi").apply();
+                    }
+                    else if(item == 2)
+                    {
+                        languagePosition = item;
+                        userEditor.putString(Config.LANGUAGE_SELECTION,"Gujarati").apply();
+                    }
+
+                }
+                dialog.dismiss();
+                // dismiss the alertbox after chose option
+
+            }
+        });
+
+        AlertDialog alert = alt_bld.create();
+        alert.show();
     }
 
     @Override
@@ -483,42 +574,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(setIntent);
                 finish();
-    }
-
-    public void showdialog(){
-
-        new PanterDialog(this)
-                .setHeaderBackground(R.color.colorPrimary)
-                .setDialogType(DialogType.SINGLECHOICE)
-                .isCancelable(true)
-                .setTitle("Select Language")
-                .isCancelable(false)
-                .items(R.array.dialog_choices, new OnSingleCallbackConfirmListener() {
-
-                    @Override
-                    public void onSingleCallbackConfirmed(PanterDialog dialog, int pos, String text) {
-
-                        if (!isConnectd(HomeActivity.this))
-                        {
-                            displayAlert();
-
-                        }else if (userId.isEmpty())
-                        {
-                            Toast.makeText(HomeActivity.this, "Register with us", Toast.LENGTH_SHORT).show();
-                            //languageAPICall(pos);
-                        }else
-                        {
-                            dialog_position = pos;
-                            Toast.makeText(HomeActivity.this, "position : " + String.valueOf(dialog_position) +
-                                        " value = " + text,
-                                Toast.LENGTH_LONG).show();
-                            userEditor.putString(Config.DIALOG_POSITION,String.valueOf(dialog_position));
-                        }
-
-                    }
-
-                })
-                .show();
     }
 
     @Override
@@ -533,11 +588,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             if (userId.isEmpty())
             {
                 intent.putExtra("days", Integer.parseInt(freeDemoDays));
+                intent.putExtra("count", 0);
             }else
             {
                 intent.putExtra("days", total_pregnecydays);
+                intent.putExtra("count", 0);
+//                userEditor.putString(Config.SELECTED_DAY, String.valueOf(total_pregnecydays)).apply();
             }
             startActivity(intent);
+            finish();
 
         }
 
@@ -551,7 +610,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             {
                 Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
                 intent.putExtra("days", total_pregnecydays-1);
+                intent.putExtra("count", 0);
                 startActivity(intent);
+                finish();
             }
 
         }
@@ -566,6 +627,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = Common.createIntent(getApplicationContext(),DetailsActivity.class);
                 intent.putExtra("days", total_pregnecydays-2);
                 startActivity(intent);
+                finish();
             }
 
 
@@ -575,58 +637,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendNotification() {
 
-//        SharedPreferences dailynoti = getSharedPreferences(PREFS, MODE_PRIVATE);
-//        editor = dailynoti.edit();
-//
-//        // First time running app?
-//        if (!dailynoti.contains("lastRun"))
-//            enableNotification(null);
-//        else
-//            recordRunTime();
-//
-//        Log.v(TAG, "Starting CheckRecentRun service...");
-
-
 
         if (!userId.isEmpty())
-        startService(new Intent(this,  DailyNotification.class));
+            startService(new Intent(this, DailyNotification.class));
 
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//        Intent alarmIntent = new Intent(HomeActivity.this, AlarmReceiver.class);
-//
-//        System.out.println("activity_completed"+String.valueOf(completedCount));
-//
-//        int ID = (int) System.currentTimeMillis();
-////        alarmIntent.putExtra("ID",ID);
-//
-//        Log.d("setRepeatedNotification", "ID:" + ID);
-//
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        userEditor.putString(Config.DAILY_NOTI_COUNT, String.valueOf(completedCount)).apply();
-//        userEditor.putString(Config.DAILY_NOTI_ID, String.valueOf(ID)).apply();
-//
-//        Calendar calendar = Calendar.getInstance();
-//        Calendar now = Calendar.getInstance();
-//        calendar.set(Calendar.HOUR, 23);
-//        calendar.set(Calendar.MINUTE, 45);
-//        calendar.set(Calendar.SECOND, 0);
-//
-//        //check whether the time is earlier than current time. If so, set it to tomorrow. Otherwise, all alarms for earlier time will fire
-//
-//        if(calendar.before(now)){
-//            calendar.add(Calendar.DATE, 1);
-//        }
-//
-//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-//        System.out.println("intervaltime "+AlarmManager.INTERVAL_DAY);
-//        System.out.println("time "+calendar.getTimeInMillis());
     }
-
     public void displayAlert() {
 
         new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
-                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
+                .setTitle((Html.fromHtml("<font color='#f44336'>Internet Connection Error</font>")))
                 .setCancelable(true)
                 .setNeutralButton("Ok",
                         new DialogInterface.OnClickListener() {
@@ -637,7 +656,247 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 .show();
     }
 
+    private void todayCompletedApiCall(final int total_pregnecydays) {
+
+        final ProgressDialog loading = ProgressDialog.show(this, "Loading...", "Please wait...", false, false);
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofday.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+
+                        try {
+
+                            loading.dismiss();
+                            JSONObject jsonObject = new JSONObject(s);
+
+                            int successCode = jsonObject.getInt("success");
+
+                            if (successCode == 1)
+                            {
+                                if (jsonObject.has("activity_number")) {
+
+                                    JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
+
+                                    int completed_activity = jsonArray.length();
+
+                                    System.out.println("arrayLen "+completed_activity);
+                                    buttonToday.setText(String.valueOf(completed_activity)+" "+"/"+" "+"10");
+
+                                }
+                                else
+                                {
+                                    String message = jsonObject.getString("message");
+                                    System.out.println("arrayData "+message);
+
+                                    buttonToday.setText(String.valueOf("0")+" "+"/"+" "+"10");
+
+                                }
+                            }
 
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("errorMess "+ e.getMessage());
+                        }
+
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        loading.dismiss();
+                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
+                    }
+                })
+        {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                System.out.println("compCount"+String.valueOf(HomeActivity.this.total_pregnecydays));
+                params.put(KEY_USERID, userId);
+                params.put(KEY_DAY, String.valueOf(total_pregnecydays));
+
+                return params;
+            }
+
+        };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+
+
+    private void yesterdayCompletedApiCall(final int total_pregnecydays) {
+
+        final ProgressDialog loading = ProgressDialog.show(this, "Loading...", "Please wait...", false, false);
+
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofday.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+
+                        loading.dismiss();
+
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(s);
+
+                            int successCode = jsonObject.getInt("success");
+
+                            if (successCode == 1)
+                            {
+                                if (jsonObject.has("activity_number")) {
+
+                                    JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
+
+                                    int completed_activity = jsonArray.length();
+
+                                    buttonYesterday.setText(String.valueOf(completed_activity)+" "+"/"+" "+"10");
+
+                                }
+
+                                else
+                                {
+                                    String message = jsonObject.getString("message");
+                                    System.out.println("arrayData "+message);
+
+                                    buttonYesterday.setText(String.valueOf("0")+" "+"/"+" "+"10");
+
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("errorMess "+ e.getMessage());
+                        }
+
+                    }
+                },
+
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        loading.dismiss();
+                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID, userId);
+                params.put(KEY_DAY, String.valueOf(total_pregnecydays -1));
+
+                return params;
+            }
+
+        };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void dayBeforeYesterdayCompletedApiCall(final int total_pregnecydays) {
+
+        final ProgressDialog loading = ProgressDialog.show(this, "Loading...", "Please wait...", false, false);
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/completedactivitiesofday.php",
+
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String s) {
+
+                        loading.dismiss();
+
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(s);
+
+                            int successCode = jsonObject.getInt("success");
+
+                            if (successCode == 1)
+                            {
+                                if (jsonObject.has("activity_number")) {
+
+                                    JSONArray jsonArray = jsonObject.getJSONArray("activity_number");
+
+                                    int completed_activity = jsonArray.length();
+
+
+
+                                    buttonDaybfrystrday.setText(String.valueOf(completed_activity)+" "+"/"+" "+"10");
+
+                                }
+                                else
+                                {
+                                    String message = jsonObject.getString("message");
+                                    System.out.println("arrayData "+message);
+
+                                    buttonDaybfrystrday.setText(String.valueOf("0")+" "+"/"+" "+"10");
+
+                                }
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("errorMess "+ e.getMessage());
+                        }
+
+                    }
+                },
+
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        loading.dismiss();
+                        System.out.println("volleyerrorMess "+ volleyError.getMessage());
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID, userId);
+                params.put(KEY_DAY, String.valueOf(total_pregnecydays -2));
+
+                return params;
+            }
+
+        };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 
 }

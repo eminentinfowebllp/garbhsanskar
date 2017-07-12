@@ -35,15 +35,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.cuboid:cuboidcirclebutton:1.0.3'
     compile 'biz.kasual:materialnumberpicker:1.2.1'
-    compile 'com.eminayar.panterdialog:panter-dialog:0.0.2.1'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
-//    compile 'br.com.forusers.heinsinputdialogs:input-dialogs-library:0.1.4'
-    compile 'com.eminayar.panterdialog:panter-dialog:0.0.2.1'
-    compile 'com.github.lzyzsd:circleprogress:1.2.1'
-    compile 'biz.kasual:materialnumberpicker:1.2.1'
-    compile 'com.wdullaer:materialdatetimepicker:1.2.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.linsea:universalvideoview:1.1.0@aar'
+
 }

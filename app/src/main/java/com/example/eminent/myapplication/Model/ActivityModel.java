@@ -137,6 +137,14 @@ public class ActivityModel {
         this.activity_desc = activity_desc;
     }
 
+    public String getActivity_audio() {
+        return activity_audio;
+    }
+
+    public void setActivity_audio(String activity_audio) {
+        this.activity_audio = activity_audio;
+    }
+
     private String activity_date;
    private String activity_title_eng,activity_title_hindi,activity_title_guj;
    private String activity_desc_eng,activity_desc_hindi,activity_desc_guj;
@@ -145,5 +153,5 @@ public class ActivityModel {
    private String activity_added_date;
    private String activity_title;
    private String activity_desc;
-
+   private String activity_audio;
 }

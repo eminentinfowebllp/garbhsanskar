@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -27,7 +28,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.eminent.myapplication.Adapter.ActivityAdapter;
-import com.example.eminent.myapplication.Model.AbstractClass;
 import com.example.eminent.myapplication.Model.ActivityModel;
 import com.example.eminent.myapplication.Model.Common;
 import com.example.eminent.myapplication.Model.Config;
@@ -54,13 +54,17 @@ public class DetailsActivity extends AppCompatActivity {
     private TextView textViewStatus;
     private Toolbar toolbar;
     private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
     ProgressDialog progressDialog;
     private int days;
+    private  String userId;
 
     public static final String KEY_DAY = "day";
     public static final String KEY_USERID = "user_id";
-
-    private AbstractClass abstractClass;
+    String activity_title ;
+    String activity_desc ;
+    String selected_day;
+    int count;
 
     public static boolean isConnectd(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -76,28 +80,48 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        abstractClass = new AbstractClass(getApplicationContext());
+        if (!isConnectd(this))
+        {
+            displayAlert();
+        }
+
+        sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         Intent intent = getIntent();
-        days = intent.getIntExtra("days",0);
+        if (intent!=null)
+        {
+            if (intent.getIntExtra("count",0)==0)
+            {
+                days = intent.getIntExtra("days",0);
+                editor.putString(Config.SELECTED_DAY, String.valueOf(days)).apply();
+            }else
+            {
+                Log.d("TAG","Description intent");
+            }
+
+        }
+//        onRestart();
+
+
+
+
+//        selected_day = sharedPreferences.getString(Config.SELECTED_DAY,"");
+
+
         recyclerView = (RecyclerView) findViewById(R.id.recyvlerview);
         textViewStatus = (TextView) findViewById(R.id.txtStatus);
 
-        sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
 
         progressDialog = new ProgressDialog(DetailsActivity.this);
 
         String prgnancyDay = sharedPreferences.getString(Config.ACTUAL_DAY, "");
-        String userId = sharedPreferences.getString(Config.USER_ID, "");
-        String dialog_pos = sharedPreferences.getString(Config.DIALOG_POSITION, "");
+        userId = sharedPreferences.getString(Config.USER_ID, "");
 
-        System.out.println("dialog_pos" +dialog_pos);
         activityModelList = new ArrayList<>();
-        abstractClass.languageAPICall(Integer.parseInt(dialog_pos),activityModelList);
+        /*abstractClass.languageAPICall(Integer.parseInt(dialog_pos),activityModelList);*/
 
-//            if (!userId.isEmpty()) {
-//                getActivityfromAPI(prgnancyDay, userId);
-//        }
+        getActivityfromAPI(userId);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -127,10 +151,12 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    public void getActivityfromAPI(final String prgnancyDay, final String userId) {
+    public void getActivityfromAPI( final String userId) {
 
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
+
+        final String language = sharedPreferences.getString(Config.LANGUAGE_SELECTION,"");
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Common.BASE_URL + "API/getactivity.php",
                 new Response.Listener<String>() {
@@ -140,21 +166,46 @@ public class DetailsActivity extends AppCompatActivity {
                         String imageArray = null;
 
                         try {
+
                             JSONObject rootObject = new JSONObject(response);
                             int successCode = rootObject.getInt("success");
+
                             if (successCode == 1) {
+
                                 JSONObject childObject = rootObject.getJSONObject("activitydata");
                                 JSONArray jsonArray = childObject.getJSONArray("activities");
+
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                                     String activity_id = jsonObject.getString("activity_id");
                                     String activity_day = jsonObject.getString("activity_day");
-                                    String activity_title = jsonObject.getString("activity_title_eng");
-                                    String activity_desc = jsonObject.getString("activity_desc_eng");
+
+                                    if(language.equalsIgnoreCase("English"))
+                                    {
+                                        activity_title = jsonObject.getString("activity_title_eng");
+                                        activity_desc = jsonObject.getString("activity_desc_eng");
+                                    }
+                                    else if(language.equalsIgnoreCase("Hindi"))
+                                    {
+                                        activity_title = jsonObject.getString("activity_title_hindi");
+                                        activity_desc = jsonObject.getString("activity_desc_hindi");
+                                    }
+                                    else if(language.equalsIgnoreCase("Gujarati"))
+                                    {
+                                        activity_title = jsonObject.getString("activity_title_guj");
+                                        activity_desc = jsonObject.getString("activity_desc_guj");
+                                    }
+                                    else
+                                    {
+                                        activity_title = jsonObject.getString("activity_title_eng");
+                                        activity_desc = jsonObject.getString("activity_desc_eng");
+                                    }
+
                                     String activity_video = jsonObject.getString("activity_video");
                                     String activity_status = jsonObject.getString("activity_status");
                                     String activity_added_date = jsonObject.getString("activity_added_date");
+                                    String activity_audio = jsonObject.getString("activity_audio");
 
                                     ActivityModel model = new ActivityModel();
                                     ArrayList<String> imagList = new ArrayList<String>();
@@ -182,6 +233,7 @@ public class DetailsActivity extends AppCompatActivity {
                                     model.setActivity_status(activity_status);
                                     model.setActivity_added_date(activity_added_date);
                                     model.setActivity_completed(activity_completed);
+                                    model.setActivity_audio(activity_audio);
 
                                     activityModelList.add(model);
 
@@ -190,7 +242,8 @@ public class DetailsActivity extends AppCompatActivity {
                                 activityAdapter = new ActivityAdapter(DetailsActivity.this, activityModelList);
                                 recyclerView.setAdapter(activityAdapter);
                                 activityAdapter.notifyDataSetChanged();
-                            } else {
+                            } else
+                                {
                                 textViewStatus.setVisibility(View.VISIBLE);
                                 textViewStatus.setText("No Activities Found");
                             }
@@ -206,7 +259,6 @@ public class DetailsActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
                         Log.d("Volley_Error", error.toString());
-
                     }
                 })
         {
@@ -214,8 +266,10 @@ public class DetailsActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
 
+               String selected_day = sharedPreferences.getString(Config.SELECTED_DAY,"");
 
-                params.put(KEY_DAY, String.valueOf(days));
+
+                params.put(KEY_DAY, selected_day);
                 params.put(KEY_USERID, userId);
                 return params;
             }
@@ -243,13 +297,16 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
+        Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public void displayAlert() {
 
         new AlertDialog.Builder(this).setMessage("Please check your internet connection and try again!")
-                .setTitle((Html.fromHtml("<font color='#F52887'>Internet Connection Error</font>")))
+                .setTitle((Html.fromHtml("<font color='#f44336'>Internet Connection Error</font>")))
                 .setCancelable(true)
                 .setNeutralButton("Ok",
                         new DialogInterface.OnClickListener() {

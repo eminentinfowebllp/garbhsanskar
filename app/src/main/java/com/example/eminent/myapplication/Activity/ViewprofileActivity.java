@@ -57,7 +57,7 @@ public class ViewprofileActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbar.setNavigationIcon(R.drawable.ic_back);
+        toolbar.setNavigationIcon(R.mipmap.ic_reply_grey600_24dp);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

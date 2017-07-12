@@ -91,9 +91,11 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                     intent.putExtra("activity_video",activityModelList.get(position).getActivity_video());
                     intent.putExtra("activity_image",activityModelList.get(position).getActivity_image());
                     intent.putExtra("activity_title",activityModelList.get(position).getActivity_title());
+                    intent.putExtra("activity_audio",activityModelList.get(position).getActivity_audio());
 
                     System.out.println ("adapter position "+position);
                     mContext.startActivity(intent);
+                    ((Activity)mContext).finish();
                 }
             });
         }

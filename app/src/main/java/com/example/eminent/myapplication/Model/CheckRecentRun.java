@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.eminent.myapplication.Activity.HomeActivity;
+import com.example.eminent.myapplication.Activity.LoginActivity;
 import com.example.eminent.myapplication.R;
 
 /**
@@ -66,7 +67,7 @@ public class CheckRecentRun extends Service {
 
     public void sendNotification() {
 
-        Intent mainIntent = new Intent(this, HomeActivity.class);
+        Intent mainIntent = new Intent(this, LoginActivity.class);
 
         @SuppressWarnings("deprecation")
         Notification noti = new Notification.Builder(this)

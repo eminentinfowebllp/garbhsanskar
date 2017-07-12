@@ -48,7 +48,7 @@
 
                 <android.support.v4.view.ViewPager
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
                     android:id="@+id/activityImage"
                     android:visibility="gone"/>
 
@@ -69,6 +69,73 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/audio_rel_ll"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Audio"
+                    android:textColor="@color/colorPrimary"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/audio_ll"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/audio_rel_ll"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:background="#F7F7F7">
+
+                <ImageView
+                    android:id="@+id/btnStart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.15"
+                    android:src="@drawable/ic_play_circle_outline_grey600_36dp"/>
+
+                <ImageView
+                    android:id="@+id/btnPause"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.15"
+                    android:src="@drawable/ic_pause_circle_outline_grey600_36dp"/>
+
+                <ImageView
+                    android:id="@+id/btnResume"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.15"
+                    android:src="@drawable/ic_restart_grey600_36dp"/>
+
+                <ImageView
+                    android:id="@+id/btnStop"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.15"
+                    android:src="@drawable/ic_stop_circle_outline_grey600_36dp"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar_audio"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="0.4"
+                    android:layout_gravity="center"
+                    android:progressDrawable="@drawable/progressbar_shape"
+                    style="?android:attr/progressBarStyleHorizontal" />
+
+            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/RelativeVideoLayout"

@@ -40,7 +40,7 @@ import com.example.eminent.myapplication.Model.SessionManager;
 import com.example.eminent.myapplication.R;
 import com.example.eminent.myapplication.Retrofit.APIService;
 import com.example.eminent.myapplication.Retrofit.ApiClient;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,7 +115,6 @@ public class LoginActivity extends AppCompatActivity {
         freeDemoButton = (Button) findViewById(R.id.demoButton);
         edittextId = (EditText) findViewById(R.id.codeEdittext);
         forgotIDTv = (TextView) findViewById(R.id.forgotIdTv);
-
 
         forgotIDTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -315,6 +314,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean validate() {
+
         boolean valid = true;
 
         String uniqueid = edittextId.getText().toString();
@@ -331,11 +331,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void requestFocus(View view) {
+
         if (view.requestFocus()) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
-
 
     private void setDataForSimpleNotification() {
 
@@ -354,7 +354,7 @@ public class LoginActivity extends AppCompatActivity {
         icon = BitmapFactory.decodeResource(this.getResources(),
                 R.mipmap.ic_launcher);
 
-        Intent notificationIntent = new Intent(this, HomeActivity.class);
+        Intent notificationIntent = new Intent(this, LoginActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationBuilder.setContentIntent(contentIntent);
         Notification notification = notificationBuilder.build();
@@ -365,7 +365,6 @@ public class LoginActivity extends AppCompatActivity {
         if (notificationId == Integer.MAX_VALUE - 1)
             notificationId = 0;
         notificationManager.notify(notificationId, notification);
-
     }
 
     @Override
@@ -433,6 +432,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);

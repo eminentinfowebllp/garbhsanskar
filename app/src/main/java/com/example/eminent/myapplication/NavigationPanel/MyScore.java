@@ -79,7 +79,7 @@ public class MyScore extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(Config.PREF_NAME, MODE_PRIVATE);
         userId = sharedPreferences.getString(Config.USER_ID, "");
-        pregnancy_day = sharedPreferences.getString(Config.PREGNANCY_DAY, "");
+        pregnancy_day = sharedPreferences.getString(Config.ACTUAL_DAY, "");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,7 +114,9 @@ public class MyScore extends AppCompatActivity {
         System.out.println("Date " + string_date);
 
         prepareAPICall();
-        if (!isConnectd(this)) {
+
+        if (!isConnectd(this))
+        {
             displayAlert();
         }
         else
